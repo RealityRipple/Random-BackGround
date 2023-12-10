@@ -245,7 +245,7 @@ Private Sub cmdOK_Click()
   frmSet.BGColor = cmdBackground.BackColor
   If chkBoot.Value = 1 Then
     WriteINI "Settings", "Boot", "Y", "config.ini"
-    regCreate_Key_Value HKEY_CURRENT_USER, "SOFTWARE\Microsoft\Windows\CurrentVersion\Run", "RBG", App.Path & "\" & App.EXEName & ".exe"
+    regCreate_Value_SZ HKEY_CURRENT_USER, "SOFTWARE\Microsoft\Windows\CurrentVersion\Run", "RBG", App.Path & "\" & App.EXEName & ".exe"
   Else
     WriteINI "Settings", "Boot", "N", "config.ini"
     regDelete_Sub_Key HKEY_CURRENT_USER, "SOFTWARE\Microsoft\Windows\CurrentVersion\Run", "RBG"

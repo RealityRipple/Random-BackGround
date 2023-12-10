@@ -25,7 +25,7 @@ End Sub
 Public Sub regDelete_A_Key(ByVal lngRootKey As Long, ByVal strRegKeyPath As String)
   If regDoes_Key_Exist(lngRootKey, strRegKeyPath) Then m_lngRetVal = RegDeleteKey(lngRootKey, strRegKeyPath)
 End Sub
-Public Function regQuery_A_Key(ByVal lngRootKey As Long, ByVal strRegKeyPath As String, ByVal strRegSubKey As String) As Variant
+Public Function regQuery_Value_SZ(ByVal lngRootKey As Long, ByVal strRegKeyPath As String, ByVal strRegSubKey As String) As Variant
 Dim intPosition   As Integer
 Dim lngKeyHandle  As Long
 Dim lngDataType   As Long
@@ -36,40 +36,67 @@ Dim strBuffer     As String
   lngBufferSize = 0
   m_lngRetVal = RegOpenKey(lngRootKey, strRegKeyPath, lngKeyHandle)
   If lngKeyHandle = 0 Then
-    regQuery_A_Key = ""
+    regQuery_Value_SZ = ""
     m_lngRetVal = RegCloseKey(lngKeyHandle)
     Exit Function
   End If
   m_lngRetVal = RegQueryValueEx(lngKeyHandle, strRegSubKey, 0&, lngDataType, ByVal 0&, lngBufferSize)
   If lngKeyHandle = 0 Then
-    regQuery_A_Key = ""
+    regQuery_Value_SZ = ""
     m_lngRetVal = RegCloseKey(lngKeyHandle)
     Exit Function
   End If
-  Select Case lngDataType
-    Case REG_SZ
-      strBuffer = Space(lngBufferSize)
-      m_lngRetVal = RegQueryValueEx(lngKeyHandle, strRegSubKey, 0&, 0&, ByVal strBuffer, lngBufferSize)
-      If m_lngRetVal <> ERROR_SUCCESS Then
-        regQuery_A_Key = ""
-      Else
-        intPosition = InStr(1, strBuffer, Chr(0))
-        If intPosition > 0 Then
-          regQuery_A_Key = Left(strBuffer, intPosition - 1)
-        Else
-          regQuery_A_Key = strBuffer
-        End If
-      End If
-    Case REG_DWORD
-      m_lngRetVal = RegQueryValueEx(lngKeyHandle, strRegSubKey, 0&, lngDataType, lngBuffer, 4&)
-      If m_lngRetVal <> ERROR_SUCCESS Then
-         regQuery_A_Key = 0
-      Else
-         regQuery_A_Key = lngBuffer
-      End If
-    Case Else
-      regQuery_A_Key = ""
-  End Select
+  If lngDataType <> REG_SZ Then
+    regQuery_Value_SZ = ""
+    m_lngRetVal = RegCloseKey(lngKeyHandle)
+    Exit Function
+  End If
+  strBuffer = Space(lngBufferSize)
+  m_lngRetVal = RegQueryValueEx(lngKeyHandle, strRegSubKey, 0&, 0&, ByVal strBuffer, lngBufferSize)
+  If m_lngRetVal <> ERROR_SUCCESS Then
+    regQuery_Value_SZ = ""
+  Else
+    intPosition = InStr(1, strBuffer, Chr(0))
+    If intPosition > 0 Then
+      regQuery_Value_SZ = Left(strBuffer, intPosition - 1)
+    Else
+      regQuery_Value_SZ = strBuffer
+    End If
+  End If
+  m_lngRetVal = RegCloseKey(lngKeyHandle)
+End Function
+Public Function regQuery_Value_DWORD(ByVal lngRootKey As Long, ByVal strRegKeyPath As String, ByVal strRegSubKey As String) As Variant
+Dim intPosition   As Integer
+Dim lngKeyHandle  As Long
+Dim lngDataType   As Long
+Dim lngBufferSize As Long
+Dim lngBuffer     As Long
+Dim strBuffer     As String
+  lngKeyHandle = 0
+  lngBufferSize = 0
+  m_lngRetVal = RegOpenKey(lngRootKey, strRegKeyPath, lngKeyHandle)
+  If lngKeyHandle = 0 Then
+    regQuery_Value_DWORD = 0
+    m_lngRetVal = RegCloseKey(lngKeyHandle)
+    Exit Function
+  End If
+  m_lngRetVal = RegQueryValueEx(lngKeyHandle, strRegSubKey, 0&, lngDataType, ByVal 0&, lngBufferSize)
+  If lngKeyHandle = 0 Then
+    regQuery_Value_DWORD = 0
+    m_lngRetVal = RegCloseKey(lngKeyHandle)
+    Exit Function
+  End If
+  If lngDataType <> REG_DWORD Then
+    regQuery_Value_DWORD = 0
+    m_lngRetVal = RegCloseKey(lngKeyHandle)
+    Exit Function
+  End If
+  m_lngRetVal = RegQueryValueEx(lngKeyHandle, strRegSubKey, 0&, lngDataType, lngBuffer, 4&)
+  If m_lngRetVal <> ERROR_SUCCESS Then
+    regQuery_Value_DWORD = 0
+  Else
+    regQuery_Value_DWORD = lngBuffer
+  End If
   m_lngRetVal = RegCloseKey(lngKeyHandle)
 End Function
 Public Function regDoes_Key_Exist(ByVal lngRootKey As Long, ByVal strRegKeyPath As String) As Boolean
@@ -83,7 +110,7 @@ Dim lngKeyHandle As Long
   End If
   m_lngRetVal = RegCloseKey(lngKeyHandle)
 End Function
-Public Sub regCreate_Key_Value(ByVal lngRootKey As Long, ByVal strRegKeyPath As String, ByVal strRegSubKey As String, varRegData As Variant)
+Public Sub regCreate_Value_SZ(ByVal lngRootKey As Long, ByVal strRegKeyPath As String, ByVal strRegSubKey As String, varRegData As Variant)
 Dim lngKeyHandle  As Long
 Dim lngDataType   As Long
 Dim strKeyValue   As String
@@ -91,6 +118,15 @@ Dim strKeyValue   As String
   m_lngRetVal = RegCreateKey(lngRootKey, strRegKeyPath, lngKeyHandle)
   strKeyValue = Trim$(varRegData) & Chr(0)
   m_lngRetVal = RegSetValueEx(lngKeyHandle, strRegSubKey, 0&, lngDataType, ByVal strKeyValue, Len(strKeyValue))
+  m_lngRetVal = RegCloseKey(lngKeyHandle)
+End Sub
+Public Sub regCreate_Value_DWORD(ByVal lngRootKey As Long, ByVal strRegKeyPath As String, ByVal strRegSubKey As String, varRegData As Long)
+Dim lngKeyHandle  As Long
+Dim lngDataType   As Long
+Dim strKeyValue   As String
+  lngDataType = REG_DWORD
+  m_lngRetVal = RegCreateKey(lngRootKey, strRegKeyPath, lngKeyHandle)
+  m_lngRetVal = RegSetValueEx(lngKeyHandle, strRegSubKey, 0&, lngDataType, ByVal varRegData, 4)
   m_lngRetVal = RegCloseKey(lngKeyHandle)
 End Sub
 Public Sub regCreate_A_Key(ByVal lngRootKey As Long, ByVal strRegKeyPath As String)

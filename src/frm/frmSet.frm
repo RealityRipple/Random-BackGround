@@ -380,7 +380,7 @@ Private Sub LoadSettings()
   End If
   If ReadINI("Settings", "Boot", "config.ini", "Y") = "Y" Then
     regCreate_A_Key HKEY_CURRENT_USER, "SOFTWARE\Microsoft\Windows\CurrentVersion\Run"
-    regCreate_Key_Value HKEY_CURRENT_USER, "SOFTWARE\Microsoft\Windows\CurrentVersion\Run", "RBG", App.Path & "\" & App.EXEName & ".exe"
+    regCreate_Value_SZ HKEY_CURRENT_USER, "SOFTWARE\Microsoft\Windows\CurrentVersion\Run", "RBG", App.Path & "\" & App.EXEName & ".exe"
   Else
     regDelete_Sub_Key HKEY_CURRENT_USER, "SOFTWARE\Microsoft\Windows\CurrentVersion\Run", "RBG"
   End If
@@ -570,27 +570,27 @@ End Sub
 
 Public Sub RemAssoc()
 Dim FileAss As String
-  FileAss = regQuery_A_Key(HKEY_CLASSES_ROOT, ".bmp", "")
+  FileAss = regQuery_Value_SZ(HKEY_CLASSES_ROOT, ".bmp", "")
   If LenB(FileAss) > 0 Then
     modReg.regDelete_A_Key HKEY_CLASSES_ROOT, FileAss & "\shell\setbg\command"
     modReg.regDelete_A_Key HKEY_CLASSES_ROOT, FileAss & "\shell\setbg"
   End If
-  FileAss = regQuery_A_Key(HKEY_CLASSES_ROOT, ".dib", "")
+  FileAss = regQuery_Value_SZ(HKEY_CLASSES_ROOT, ".dib", "")
   If LenB(FileAss) > 0 Then
     modReg.regDelete_A_Key HKEY_CLASSES_ROOT, FileAss & "\shell\setbg\command"
     modReg.regDelete_A_Key HKEY_CLASSES_ROOT, FileAss & "\shell\setbg"
   End If
-  FileAss = regQuery_A_Key(HKEY_CLASSES_ROOT, ".jpg", "")
+  FileAss = regQuery_Value_SZ(HKEY_CLASSES_ROOT, ".jpg", "")
   If LenB(FileAss) > 0 Then
     modReg.regDelete_A_Key HKEY_CLASSES_ROOT, FileAss & "\shell\setbg\command"
     modReg.regDelete_A_Key HKEY_CLASSES_ROOT, FileAss & "\shell\setbg"
   End If
-  FileAss = regQuery_A_Key(HKEY_CLASSES_ROOT, ".gif", "")
+  FileAss = regQuery_Value_SZ(HKEY_CLASSES_ROOT, ".gif", "")
   If LenB(FileAss) > 0 Then
     modReg.regDelete_A_Key HKEY_CLASSES_ROOT, FileAss & "\shell\setbg\command"
     modReg.regDelete_A_Key HKEY_CLASSES_ROOT, FileAss & "\shell\setbg"
   End If
-  FileAss = regQuery_A_Key(HKEY_CLASSES_ROOT, ".png", "")
+  FileAss = regQuery_Value_SZ(HKEY_CLASSES_ROOT, ".png", "")
   If LenB(FileAss) > 0 Then
     modReg.regDelete_A_Key HKEY_CLASSES_ROOT, FileAss & "\shell\setbg\command"
     modReg.regDelete_A_Key HKEY_CLASSES_ROOT, FileAss & "\shell\setbg"
@@ -599,40 +599,40 @@ End Sub
 
 Public Sub SetAssoc()
 Dim FileAss As String
-  FileAss = regQuery_A_Key(HKEY_CLASSES_ROOT, ".bmp", "")
+  FileAss = regQuery_Value_SZ(HKEY_CLASSES_ROOT, ".bmp", "")
   If LenB(FileAss) > 0 Then
     modReg.regCreate_A_Key HKEY_CLASSES_ROOT, FileAss & "\shell\setbg"
-    modReg.regCreate_Key_Value HKEY_CLASSES_ROOT, FileAss & "\shell\setbg", vbNullString, "Set as Background"
+    modReg.regCreate_Value_SZ HKEY_CLASSES_ROOT, FileAss & "\shell\setbg", vbNullString, "Set as Background"
     modReg.regCreate_A_Key HKEY_CLASSES_ROOT, FileAss & "\shell\setbg\command"
-    modReg.regCreate_Key_Value HKEY_CLASSES_ROOT, FileAss & "\shell\setbg\command", vbNullString, """" & App.Path & "\" & App.EXEName & ".exe"" /set %1"
+    modReg.regCreate_Value_SZ HKEY_CLASSES_ROOT, FileAss & "\shell\setbg\command", vbNullString, """" & App.Path & "\" & App.EXEName & ".exe"" /set %1"
   End If
-  FileAss = regQuery_A_Key(HKEY_CLASSES_ROOT, ".dib", "")
+  FileAss = regQuery_Value_SZ(HKEY_CLASSES_ROOT, ".dib", "")
   If LenB(FileAss) > 0 Then
     modReg.regCreate_A_Key HKEY_CLASSES_ROOT, FileAss & "\shell\setbg"
-    modReg.regCreate_Key_Value HKEY_CLASSES_ROOT, FileAss & "\shell\setbg", vbNullString, "Set as Background"
+    modReg.regCreate_Value_SZ HKEY_CLASSES_ROOT, FileAss & "\shell\setbg", vbNullString, "Set as Background"
     modReg.regCreate_A_Key HKEY_CLASSES_ROOT, FileAss & "\shell\setbg\command"
-    modReg.regCreate_Key_Value HKEY_CLASSES_ROOT, FileAss & "\shell\setbg\command", vbNullString, """" & App.Path & "\" & App.EXEName & ".exe"" /set %1"
+    modReg.regCreate_Value_SZ HKEY_CLASSES_ROOT, FileAss & "\shell\setbg\command", vbNullString, """" & App.Path & "\" & App.EXEName & ".exe"" /set %1"
   End If
-  FileAss = regQuery_A_Key(HKEY_CLASSES_ROOT, ".jpg", "")
+  FileAss = regQuery_Value_SZ(HKEY_CLASSES_ROOT, ".jpg", "")
   If LenB(FileAss) > 0 Then
     modReg.regCreate_A_Key HKEY_CLASSES_ROOT, FileAss & "\shell\setbg"
-    modReg.regCreate_Key_Value HKEY_CLASSES_ROOT, FileAss & "\shell\setbg", vbNullString, "Set as Background"
+    modReg.regCreate_Value_SZ HKEY_CLASSES_ROOT, FileAss & "\shell\setbg", vbNullString, "Set as Background"
     modReg.regCreate_A_Key HKEY_CLASSES_ROOT, FileAss & "\shell\setbg\command"
-    modReg.regCreate_Key_Value HKEY_CLASSES_ROOT, FileAss & "\shell\setbg\command", vbNullString, """" & App.Path & "\" & App.EXEName & ".exe"" /set %1"
+    modReg.regCreate_Value_SZ HKEY_CLASSES_ROOT, FileAss & "\shell\setbg\command", vbNullString, """" & App.Path & "\" & App.EXEName & ".exe"" /set %1"
   End If
-  FileAss = regQuery_A_Key(HKEY_CLASSES_ROOT, ".gif", "")
+  FileAss = regQuery_Value_SZ(HKEY_CLASSES_ROOT, ".gif", "")
   If LenB(FileAss) > 0 Then
     modReg.regCreate_A_Key HKEY_CLASSES_ROOT, FileAss & "\shell\setbg"
-    modReg.regCreate_Key_Value HKEY_CLASSES_ROOT, FileAss & "\shell\setbg", vbNullString, "Set as Background"
+    modReg.regCreate_Value_SZ HKEY_CLASSES_ROOT, FileAss & "\shell\setbg", vbNullString, "Set as Background"
     modReg.regCreate_A_Key HKEY_CLASSES_ROOT, FileAss & "\shell\setbg\command"
-    modReg.regCreate_Key_Value HKEY_CLASSES_ROOT, FileAss & "\shell\setbg\command", vbNullString, """" & App.Path & "\" & App.EXEName & ".exe"" /set %1"
+    modReg.regCreate_Value_SZ HKEY_CLASSES_ROOT, FileAss & "\shell\setbg\command", vbNullString, """" & App.Path & "\" & App.EXEName & ".exe"" /set %1"
   End If
-  FileAss = regQuery_A_Key(HKEY_CLASSES_ROOT, ".png", "")
+  FileAss = regQuery_Value_SZ(HKEY_CLASSES_ROOT, ".png", "")
   If LenB(FileAss) > 0 Then
     modReg.regCreate_A_Key HKEY_CLASSES_ROOT, FileAss & "\shell\setbg"
-    modReg.regCreate_Key_Value HKEY_CLASSES_ROOT, FileAss & "\shell\setbg", vbNullString, "Set as Background"
+    modReg.regCreate_Value_SZ HKEY_CLASSES_ROOT, FileAss & "\shell\setbg", vbNullString, "Set as Background"
     modReg.regCreate_A_Key HKEY_CLASSES_ROOT, FileAss & "\shell\setbg\command"
-    modReg.regCreate_Key_Value HKEY_CLASSES_ROOT, FileAss & "\shell\setbg\command", vbNullString, """" & App.Path & "\" & App.EXEName & ".exe"" /set %1"
+    modReg.regCreate_Value_SZ HKEY_CLASSES_ROOT, FileAss & "\shell\setbg\command", vbNullString, """" & App.Path & "\" & App.EXEName & ".exe"" /set %1"
   End If
 End Sub
 

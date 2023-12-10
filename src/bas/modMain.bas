@@ -97,17 +97,17 @@ End Sub
 Private Sub SetWallpaperStyle(ByVal Style As Integer)
   Select Case Style
     Case 0
-      regCreate_Key_Value HKEY_CURRENT_USER, "Control Panel\Desktop", "TileWallpaper", "0 "
-      regCreate_Key_Value HKEY_CURRENT_USER, "Control Panel\Desktop", "WallpaperStyle", "0 "
+      regCreate_Value_SZ HKEY_CURRENT_USER, "Control Panel\Desktop", "TileWallpaper", "0 "
+      regCreate_Value_SZ HKEY_CURRENT_USER, "Control Panel\Desktop", "WallpaperStyle", "0 "
     Case 1
-      regCreate_Key_Value HKEY_CURRENT_USER, "Control Panel\Desktop", "TileWallpaper", "1 "
-      regCreate_Key_Value HKEY_CURRENT_USER, "Control Panel\Desktop", "WallpaperStyle", "1 "
+      regCreate_Value_SZ HKEY_CURRENT_USER, "Control Panel\Desktop", "TileWallpaper", "1 "
+      regCreate_Value_SZ HKEY_CURRENT_USER, "Control Panel\Desktop", "WallpaperStyle", "1 "
     Case 2
-      regCreate_Key_Value HKEY_CURRENT_USER, "Control Panel\Desktop", "TileWallpaper", "0 "
-      regCreate_Key_Value HKEY_CURRENT_USER, "Control Panel\Desktop", "WallpaperStyle", "2 "
+      regCreate_Value_SZ HKEY_CURRENT_USER, "Control Panel\Desktop", "TileWallpaper", "0 "
+      regCreate_Value_SZ HKEY_CURRENT_USER, "Control Panel\Desktop", "WallpaperStyle", "2 "
     Case Else
-      regCreate_Key_Value HKEY_CURRENT_USER, "Control Panel\Desktop", "TileWallpaper", "0 "
-      regCreate_Key_Value HKEY_CURRENT_USER, "Control Panel\Desktop", "WallpaperStyle", "0"
+      regCreate_Value_SZ HKEY_CURRENT_USER, "Control Panel\Desktop", "TileWallpaper", "0 "
+      regCreate_Value_SZ HKEY_CURRENT_USER, "Control Panel\Desktop", "WallpaperStyle", "0 "
   End Select
 End Sub
 
