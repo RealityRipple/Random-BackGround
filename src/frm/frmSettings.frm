@@ -282,11 +282,13 @@ End Sub
 
 Private Sub Form_Load()
 Dim BGDir    As String
+Dim DefDir   As String
 Dim Position As String
 Dim MaxScale As String
 Dim I        As Integer
-  BGDir = ReadINI("Settings", "Directory", "config.ini", App.Path & "\")
-  If LenB(Dir$(BGDir, vbDirectory)) = 0 Or LenB(BGDir) = 0 Then BGDir = App.Path & "\"
+  DefDir = PicturesFolder
+  BGDir = ReadINI("Settings", "Directory", "config.ini", PicturesFolder & "\")
+  If LenB(Dir$(BGDir, vbDirectory)) = 0 Or LenB(BGDir) = 0 Then BGDir = PicturesFolder & "\"
   dirBG.Path = BGDir
   drvBG.Drive = Left$(BGDir, 3)
   chkSubDir.Value = IIf(ReadINI("Settings", "Subdirectories", "config.ini", "N") = "Y", 1, 0)
