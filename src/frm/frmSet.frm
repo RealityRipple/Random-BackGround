@@ -670,7 +670,10 @@ Static LastMons() As Monitor
   On Error GoTo Erred
   If I = -1 Then LastMons = GetMonitors
   For I = 0 To lMons - 1
-    If Not (Mons(I).Top = LastMons(I).Top And Mons(I).Left = LastMons(I).Left And Mons(I).Width = LastMons(I).Width And Mons(I).Height = LastMons(I).Height) Then
+    If I > UBound(LastMons) Then
+      NewBackground
+      Exit For
+    ElseIf Not (Mons(I).Top = LastMons(I).Top And Mons(I).Left = LastMons(I).Left And Mons(I).Width = LastMons(I).Width And Mons(I).Height = LastMons(I).Height) Then
       NewBackground
       Exit For
     End If
