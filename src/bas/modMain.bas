@@ -75,24 +75,49 @@ Public Sub Main()
   End If
 End Sub
 
+Public Function HasSysAssoc() As Boolean
+Dim osInfo As OSVERSIONINFOEX
+  If Not GetOSInfo(osInfo) Then
+    HasSysAssoc = False
+    Return
+  End If
+  HasSysAssoc = Not osInfo.dwMajorVersion < 6
+End Function
+
+Public Function CanSmooth() As Boolean
+Dim osInfo As OSVERSIONINFOEX
+  If Not GetOSInfo(osInfo) Then
+    CanSmooth = False
+    Return
+  End If
+  If osInfo.dwMajorVersion < 6 Then
+    CanSmooth = False
+    Return
+  End If
+  If osInfo.dwMajorVersion = 6 And osInfo.dwMinorVersion = 0 Then
+    CanSmooth = False
+    Return
+  End If
+  CanSmooth = True
+  Dim hWndow As Long
+  hWndow = FindWindowA("Progman", 0)
+  If hWndow = 0 Then Return
+  Dim result As Long
+  SendMessageTimeoutA hWndow, &H52C, 0, 0, 0, 500, result
+End Function
+
 Public Sub SetBG(Optional ByVal AltVal As String = "")
+Dim OldStyle As Boolean
   SetWallpaperStyle 1
-  Dim osInfo As OSVERSIONINFOEX
-  Dim OldStyle As Boolean
-  If GetOSInfo(osInfo) Then
-    OldStyle = Not (osInfo.dwMajorVersion = 6 And osInfo.dwMinorVersion = 1)
-  Else
+  If ReadINI("Settings", "Smooth", "config.ini", "N") <> "Y" Then
     OldStyle = True
+  Else
+    OldStyle = Not CanSmooth
   End If
   If Not OldStyle Then
-    Dim hWndow As Long
-    hWndow = FindWindowA("Progman", 0)
-    If hWndow = 0 Then
+    If Not ActiveDesktopSetWallpaper(SettingsFolder & "\RandomBG" & AltVal & ".bmp") Then
       OldStyle = True
-    Else
-      Dim result As Long
-      SendMessageTimeoutA hWndow, &H52, 0, 0, 0, 500, result
-      OldStyle = Not ActiveDesktopSetWallpaper(SettingsFolder & "\RandomBG" & AltVal & ".bmp")
+      WriteINI "Settings", "Smooth", "N", "config.ini"
     End If
   End If
   If OldStyle Then SystemParametersInfoA 20, 0&, SettingsFolder & "\RandomBG" & AltVal & ".bmp", &H1 Or &H2

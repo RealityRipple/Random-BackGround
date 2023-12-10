@@ -378,6 +378,11 @@ Private Sub LoadSettings()
   Else
     RemAssoc
   End If
+  If ReadINI("Settings", "DesktopMenu", "config.ini", "N") = "Y" Then
+    SetDesktopMenu
+  Else
+    RemDesktopMenu
+  End If
   If ReadINI("Settings", "Boot", "config.ini", "Y") = "Y" Then
     regCreate_A_Key HKEY_CURRENT_USER, "SOFTWARE\Microsoft\Windows\CurrentVersion\Run"
     regCreate_Value_SZ HKEY_CURRENT_USER, "SOFTWARE\Microsoft\Windows\CurrentVersion\Run", "RBG", App.Path & "\" & App.EXEName & ".exe"
@@ -404,6 +409,7 @@ Erred:
 End Sub
 
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
+  RemDesktopMenu
   Unload frmSettings
   Unload frmAbout
 End Sub
@@ -634,6 +640,18 @@ Dim FileAss As String
     modReg.regCreate_A_Key HKEY_CLASSES_ROOT, FileAss & "\shell\setbg\command"
     modReg.regCreate_Value_SZ HKEY_CLASSES_ROOT, FileAss & "\shell\setbg\command", vbNullString, """" & App.Path & "\" & App.EXEName & ".exe"" /set %1"
   End If
+End Sub
+
+Public Sub RemDesktopMenu()
+  modReg.regDelete_A_Key HKEY_CLASSES_ROOT, "Directory\Background\shell\nextbg\command"
+  modReg.regDelete_A_Key HKEY_CLASSES_ROOT, "Directory\Background\shell\nextbg"
+End Sub
+
+Public Sub SetDesktopMenu()
+  modReg.regCreate_A_Key HKEY_CLASSES_ROOT, "Directory\Background\shell\nextbg"
+  modReg.regCreate_Value_SZ HKEY_CLASSES_ROOT, "Directory\Background\shell\nextbg", vbNullString, "Next Random BackGround"
+  modReg.regCreate_A_Key HKEY_CLASSES_ROOT, "Directory\Background\shell\nextbg\command"
+  modReg.regCreate_Value_SZ HKEY_CLASSES_ROOT, "Directory\Background\shell\nextbg\command", vbNullString, """" & App.Path & "\" & App.EXEName & ".exe"" /next"
 End Sub
 
 Private Sub tmrNewBG_Timer()

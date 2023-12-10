@@ -3,51 +3,68 @@ Object = "{F9043C88-F6F2-101A-A3C9-08002B2F49FB}#1.2#0"; "COMDLG32.OCX"
 Begin VB.Form frmSettings 
    BorderStyle     =   3  'Fixed Dialog
    Caption         =   "Random BackGround Settings"
-   ClientHeight    =   3555
+   ClientHeight    =   2655
    ClientLeft      =   45
    ClientTop       =   330
-   ClientWidth     =   4875
+   ClientWidth     =   6960
    Icon            =   "frmSettings.frx":0000
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   3555
-   ScaleWidth      =   4875
+   ScaleHeight     =   2655
+   ScaleWidth      =   6960
    ShowInTaskbar   =   0   'False
    StartUpPosition =   2  'CenterScreen
+   Begin VB.CheckBox chkSmooth 
+      Caption         =   "Smooth &Transition"
+      Height          =   255
+      Left            =   2760
+      TabIndex        =   14
+      Top             =   2040
+      Width           =   1575
+   End
+   Begin VB.CheckBox chkDesktopMenu 
+      Caption         =   "Des&ktop Context Menu"
+      Height          =   255
+      Left            =   4860
+      TabIndex        =   16
+      ToolTipText     =   "Add a menu item in the Desktop context menu to show a new Random BackGround."
+      Top             =   1680
+      Width           =   1935
+   End
    Begin VB.ComboBox cmbMaxScale 
       Height          =   315
       ItemData        =   "frmSettings.frx":014A
-      Left            =   2760
+      Left            =   4860
       List            =   "frmSettings.frx":0169
       Style           =   2  'Dropdown List
-      TabIndex        =   15
+      TabIndex        =   9
       ToolTipText     =   "Maximum ratio to upscale images to fit or fill the screen."
-      Top             =   1500
+      Top             =   300
       Width           =   2055
    End
    Begin VB.CheckBox chkUnique 
       Caption         =   "&Unique to Screen"
       Height          =   255
       Left            =   2760
-      TabIndex        =   12
+      TabIndex        =   13
       ToolTipText     =   $"frmSettings.frx":019D
-      Top             =   2760
+      Top             =   1680
       Width           =   1575
    End
    Begin VB.CommandButton cmdBackground 
       BackColor       =   &H00000000&
       Height          =   255
-      Left            =   4260
+      Left            =   6300
       Style           =   1  'Graphical
-      TabIndex        =   9
+      TabIndex        =   11
       ToolTipText     =   "Color of empty background space. Particularly used by Fit and Center positioning."
-      Top             =   1860
+      Top             =   900
       Width           =   555
    End
    Begin MSComDlg.CommonDialog cdlBGColor 
-      Left            =   4740
-      Top             =   1560
+      Left            =   4320
+      Top             =   2100
       _ExtentX        =   847
       _ExtentY        =   847
       _Version        =   393216
@@ -75,17 +92,17 @@ Begin VB.Form frmSettings
       Width           =   2055
    End
    Begin VB.CheckBox chkAssoc 
-      Caption         =   "&Assoctaite with Images"
+      Caption         =   "Assoctaite &with Images"
       Height          =   255
-      Left            =   2760
-      TabIndex        =   11
+      Left            =   4860
+      TabIndex        =   15
       ToolTipText     =   "Add a menu item to BMP, DIB, JPG, and GIF files in Windows Explorer to set the file as the current background image."
-      Top             =   2460
+      Top             =   1320
       Width           =   1935
    End
    Begin VB.Frame fraBG 
       Caption         =   "Background &Directory"
-      Height          =   3450
+      Height          =   2550
       Left            =   60
       TabIndex        =   0
       Top             =   60
@@ -96,11 +113,11 @@ Begin VB.Form frmSettings
          Left            =   120
          TabIndex        =   3
          ToolTipText     =   "Backgrounds will be chosen from the selected directory or any subdirectory."
-         Top             =   3120
+         Top             =   2220
          Width           =   1935
       End
       Begin VB.DirListBox dirBG 
-         Height          =   2340
+         Height          =   1440
          Left            =   120
          TabIndex        =   2
          ToolTipText     =   "Directory to use."
@@ -120,45 +137,45 @@ Begin VB.Form frmSettings
       Caption         =   "OK"
       Default         =   -1  'True
       Height          =   375
-      Left            =   2760
-      TabIndex        =   13
+      Left            =   4860
+      TabIndex        =   17
       ToolTipText     =   "Save settings."
-      Top             =   3120
+      Top             =   2220
       Width           =   975
    End
    Begin VB.CheckBox chkBoot 
       Caption         =   "Run on &StartUp"
       Height          =   255
       Left            =   2760
-      TabIndex        =   10
+      TabIndex        =   12
       ToolTipText     =   "Run the program on system Startup for this user."
-      Top             =   2160
+      Top             =   1320
       Width           =   1455
    End
    Begin VB.CommandButton cmdCancel 
       Cancel          =   -1  'True
       Caption         =   "C&ancel"
       Height          =   375
-      Left            =   3840
-      TabIndex        =   14
+      Left            =   5940
+      TabIndex        =   18
       ToolTipText     =   "Close."
-      Top             =   3120
+      Top             =   2220
       Width           =   975
    End
    Begin VB.Label lblMaxScale 
       Caption         =   "&Maximum Scale:"
       Height          =   255
-      Left            =   2760
-      TabIndex        =   16
-      Top             =   1260
-      Width           =   2000
+      Left            =   4860
+      TabIndex        =   8
+      Top             =   60
+      Width           =   1995
    End
    Begin VB.Label lblBackground 
       Caption         =   "Background &Color:"
       Height          =   255
-      Left            =   2760
-      TabIndex        =   8
-      Top             =   1860
+      Left            =   4860
+      TabIndex        =   10
+      Top             =   900
       Width           =   1395
    End
    Begin VB.Label lblPosition 
@@ -257,12 +274,24 @@ Private Sub cmdOK_Click()
     WriteINI "Settings", "Assoc", "N", "config.ini"
     frmSet.RemAssoc
   End If
+  If chkDesktopMenu.Value = 1 Then
+    WriteINI "Settings", "DesktopMenu", "Y", "config.ini"
+    frmSet.SetDesktopMenu
+  Else
+    WriteINI "Settings", "DesktopMenu", "N", "config.ini"
+    frmSet.RemDesktopMenu
+  End If
   If chkUnique.Value = 1 Then
     WriteINI "Settings", "Unique", "Y", "config.ini"
     frmSet.Unique = True
   Else
     WriteINI "Settings", "Unique", "N", "config.ini"
     frmSet.Unique = False
+  End If
+  If chkSmooth.Value = 1 Then
+    WriteINI "Settings", "Smooth", "Y", "config.ini"
+  Else
+    WriteINI "Settings", "Smooth", "N", "config.ini"
   End If
   Unload Me
   frmSet.NewBackground
@@ -325,7 +354,21 @@ Dim I        As Integer
   
   cmdBackground.BackColor = ReadINI("Settings", "Color", "config.ini", "0")
   chkBoot.Value = IIf(ReadINI("Settings", "Boot", "config.ini", "Y") = "Y", 1, 0)
-  chkAssoc.Value = IIf(ReadINI("Settings", "Assoc", "config.ini", "N") = "Y", 1, 0)
+  If HasSysAssoc Then
+    chkAssoc.Enabled = False
+    chkAssoc.Value = 0
+  Else
+    chkAssoc.Enabled = True
+    chkAssoc.Value = IIf(ReadINI("Settings", "Assoc", "config.ini", "N") = "Y", 1, 0)
+  End If
+  chkDesktopMenu.Value = IIf(ReadINI("Settings", "DesktopMenu", "config.ini", "N") = "Y", 1, 0)
+  If Not CanSmooth Then
+    chkSmooth.Enabled = False
+    chkSmooth.Value = 0
+  Else
+    chkSmooth.Enabled = True
+    chkSmooth.Value = IIf(ReadINI("Settings", "Smooth", "config.ini", "N") = "Y", 1, 0)
+  End If
   If GetMonitorCount < 2 Then
     chkUnique.Enabled = False
     chkUnique.Value = 0
