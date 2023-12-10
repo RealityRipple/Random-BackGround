@@ -357,11 +357,14 @@ Dim I        As Integer
   If HasSysAssoc Then
     chkAssoc.Enabled = False
     chkAssoc.Value = 0
+    chkDesktopMenu.Enabled = True
+    chkDesktopMenu.Value = IIf(ReadINI("Settings", "DesktopMenu", "config.ini", "N") = "Y", 1, 0)
   Else
     chkAssoc.Enabled = True
     chkAssoc.Value = IIf(ReadINI("Settings", "Assoc", "config.ini", "N") = "Y", 1, 0)
+    chkDesktopMenu.Enabled = False
+    chkDesktopMenu.Value = 0
   End If
-  chkDesktopMenu.Value = IIf(ReadINI("Settings", "DesktopMenu", "config.ini", "N") = "Y", 1, 0)
   If Not CanSmooth Then
     chkSmooth.Enabled = False
     chkSmooth.Value = 0
