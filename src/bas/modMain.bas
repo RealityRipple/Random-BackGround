@@ -68,6 +68,10 @@ Public Sub Main()
       frmSet.NewBackground Mid$(Command$, 6)
     End If
     End
+  ElseIf Command$ = "/next" Then
+    Load frmSet
+    frmSet.NewBackground
+    End
   End If
 End Sub
 
