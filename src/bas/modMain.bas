@@ -79,7 +79,7 @@ Public Function HasSysAssoc() As Boolean
 Dim osInfo As OSVERSIONINFOEX
   If Not GetOSInfo(osInfo) Then
     HasSysAssoc = False
-    Return
+    Exit Function
   End If
   HasSysAssoc = Not osInfo.dwMajorVersion < 6
 End Function
@@ -88,20 +88,20 @@ Public Function CanSmooth() As Boolean
 Dim osInfo As OSVERSIONINFOEX
   If Not GetOSInfo(osInfo) Then
     CanSmooth = False
-    Return
+    Exit Function
   End If
   If osInfo.dwMajorVersion < 6 Then
     CanSmooth = False
-    Return
+    Exit Function
   End If
   If osInfo.dwMajorVersion = 6 And osInfo.dwMinorVersion = 0 Then
     CanSmooth = False
-    Return
+    Exit Function
   End If
   CanSmooth = True
   Dim hWndow As Long
   hWndow = FindWindowA("Progman", 0)
-  If hWndow = 0 Then Return
+  If hWndow = 0 Then Exit Function
   Dim result As Long
   SendMessageTimeoutA hWndow, &H52C, 0, 0, 0, 500, result
 End Function
