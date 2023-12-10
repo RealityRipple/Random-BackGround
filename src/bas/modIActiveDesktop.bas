@@ -49,8 +49,8 @@ End Enum
 
 Private Sub ModifyTheme()
 Dim CustomThemePath As String
-  If LenB(ThemesFolder) = 0 Then Exit Sub
-  CustomThemePath = ThemesFolder & "\Custom.theme"
+  CustomThemePath = ThemesPath
+  If LenB(CustomThemePath) = 0 Then Exit Sub
   If LenB(Dir$(CustomThemePath)) = 0 Then Exit Sub
   'WriteINI "Slideshow", "ImagesRootPIDL", "", CustomThemePath
   'WriteINI "Slideshow", "Interval", "86400000", CustomThemePath

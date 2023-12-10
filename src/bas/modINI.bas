@@ -58,20 +58,12 @@ Dim pidl        As Long
     CoTaskMemFree pidl
   End If
 End Function
-Public Function ThemesFolder() As String
-Dim lngRet      As Long
+Public Function ThemesPath() As String
 Dim strLocation As String
-Dim pidl        As Long
-  lngRet = SHGetSpecialFolderLocation(frmSet.hwnd, &H1C, pidl)
-  If lngRet = 0 Then
-    strLocation = Space$(260)
-    lngRet = SHGetPathFromIDList(ByVal pidl, strLocation)
-    If lngRet = 0 Or LenB(Trim$(strLocation)) = 0 Then
-      ThemesFolder = ""
-    Else
-      ThemesFolder = Left$(strLocation, InStr(strLocation, vbNullChar) - 1) & "\Microsoft\Windows\Themes"
-      If LenB(Dir$(Left$(strLocation, InStr(strLocation, vbNullChar) - 1) & "\Microsoft\Windows\Themes\", vbDirectory Or vbHidden Or vbReadOnly Or vbSystem)) = 0 Then ThemesFolder = ""
-    End If
-    CoTaskMemFree pidl
+  strLocation = regQuery_Value_SZ(HKEY_CURRENT_USER, "SOFTWARE\Microsoft\Windows\CurrentVersion\Themes", "CurrentTheme")
+  If LenB(strLocation) = 0 Then
+    ThemesPath = ""
+  Else
+    ThemesPath = strLocation
   End If
 End Function
