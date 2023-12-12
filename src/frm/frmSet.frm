@@ -643,15 +643,15 @@ Dim FileAss As String
 End Sub
 
 Public Sub RemDesktopMenu()
-  modReg.regDelete_A_Key HKEY_CLASSES_ROOT, "Directory\Background\shell\nextbg\command"
-  modReg.regDelete_A_Key HKEY_CLASSES_ROOT, "Directory\Background\shell\nextbg"
+  modReg.regDelete_A_Key HKEY_CLASSES_ROOT, "DesktopBackground\shell\nextbg\command"
+  modReg.regDelete_A_Key HKEY_CLASSES_ROOT, "DesktopBackground\shell\nextbg"
 End Sub
 
 Public Sub SetDesktopMenu()
-  modReg.regCreate_A_Key HKEY_CLASSES_ROOT, "Directory\Background\shell\nextbg"
-  modReg.regCreate_Value_SZ HKEY_CLASSES_ROOT, "Directory\Background\shell\nextbg", vbNullString, "Next Random BackGround"
-  modReg.regCreate_A_Key HKEY_CLASSES_ROOT, "Directory\Background\shell\nextbg\command"
-  modReg.regCreate_Value_SZ HKEY_CLASSES_ROOT, "Directory\Background\shell\nextbg\command", vbNullString, """" & App.Path & "\" & App.EXEName & ".exe"" /next"
+  modReg.regCreate_A_Key HKEY_CLASSES_ROOT, "DesktopBackground\shell\nextbg"
+  modReg.regCreate_Value_SZ HKEY_CLASSES_ROOT, "DesktopBackground\shell\nextbg", vbNullString, "Next Random BackGround"
+  modReg.regCreate_A_Key HKEY_CLASSES_ROOT, "DesktopBackground\shell\nextbg\command"
+  modReg.regCreate_Value_SZ HKEY_CLASSES_ROOT, "DesktopBackground\shell\nextbg\command", vbNullString, """" & App.Path & "\" & App.EXEName & ".exe"" /next"
 End Sub
 
 Private Sub tmrNewBG_Timer()

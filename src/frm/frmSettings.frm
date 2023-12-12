@@ -357,20 +357,20 @@ Dim I        As Integer
   If HasSysAssoc Then
     chkAssoc.Enabled = False
     chkAssoc.Value = 0
-    chkDesktopMenu.Enabled = True
-    chkDesktopMenu.Value = IIf(ReadINI("Settings", "DesktopMenu", "config.ini", "N") = "Y", 1, 0)
   Else
     chkAssoc.Enabled = True
     chkAssoc.Value = IIf(ReadINI("Settings", "Assoc", "config.ini", "N") = "Y", 1, 0)
-    chkDesktopMenu.Enabled = False
-    chkDesktopMenu.Value = 0
   End If
   If Not CanSmooth Then
     chkSmooth.Enabled = False
     chkSmooth.Value = 0
+    chkDesktopMenu.Enabled = False
+    chkDesktopMenu.Value = 0
   Else
     chkSmooth.Enabled = True
     chkSmooth.Value = IIf(ReadINI("Settings", "Smooth", "config.ini", "N") = "Y", 1, 0)
+    chkDesktopMenu.Enabled = True
+    chkDesktopMenu.Value = IIf(ReadINI("Settings", "DesktopMenu", "config.ini", "N") = "Y", 1, 0)
   End If
   If GetMonitorCount < 2 Then
     chkUnique.Enabled = False
