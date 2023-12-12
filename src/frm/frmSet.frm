@@ -87,7 +87,7 @@ Attribute VB_Exposed = False
 'RealityRipple Software
 '
 'Program Created        September 17, 2005
-'Program Last Modified  February 26, 2013
+'Program Last Modified  December 11, 2023
 Option Explicit
 Private Declare Function SetForegroundWindow Lib "user32" (ByVal hwnd As Long) As Long
 Private Declare Function GetTickCount Lib "kernel32" () As Long
