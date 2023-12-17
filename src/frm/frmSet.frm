@@ -107,6 +107,7 @@ Public Subdirs    As Boolean
 Private LastTick  As Long
 
 Private Function CreateImage(ByVal FromFile As String, ByVal Width As Long, ByVal Height As Long) As IPictureDisp
+Dim bGD As Boolean
 Dim p   As StdPicture
 Dim mDC As Long
 Dim srcW As Long
@@ -118,12 +119,18 @@ Dim srcH As Long
     Exit Function
   End If
   If LCase$(Right$(FromFile, 4)) = ".png" Then
+    bGD = True
+  Else
+    On Error Resume Next
+    Set p = LoadPicture(FromFile)
+    On Error GoTo Erred
+    If p Is Nothing Then bGD = True
+  End If
+  If bGD Then
     Dim gdiToken As Long
     gdiToken = InitGDIPlus
     Set p = LoadPictureGDIPlus(FromFile, BGColor)
     FreeGDIPlus gdiToken
-  Else
-    Set p = LoadPicture(FromFile)
   End If
   srcW = ScaleX(p.Width, vbHimetric, vbPixels)
   srcH = ScaleY(p.Height, vbHimetric, vbPixels)
