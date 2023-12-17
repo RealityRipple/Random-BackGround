@@ -304,7 +304,7 @@ Dim Temp As String
   dirBG.Path = drvBG.Drive
   Exit Sub
 Erred:
-  If Err.Number = 68 Then MsgBox "Drive " & UCase$(Left$(drvBG.Drive, 1)) & " is unavailable!", vbExclamation + vbOKOnly + vbSystemModal
+  If Err.Number = 68 Then frmNotify.Notify "Drive " & UCase$(Left$(drvBG.Drive, 1)) & " is unavailable!"
   drvBG.Drive = Left$(Temp, 2)
   dirBG.Path = Temp
 End Sub

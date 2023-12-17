@@ -87,7 +87,7 @@ Attribute VB_Exposed = False
 'RealityRipple Software
 '
 'Program Created        September 17, 2005
-'Program Last Modified  December 11, 2023
+'Program Last Modified  December 16, 2023
 Option Explicit
 Private Declare Function SetForegroundWindow Lib "user32" (ByVal hwnd As Long) As Long
 Private Declare Function GetTickCount Lib "kernel32" () As Long
@@ -328,13 +328,13 @@ Static LastFile() As String
     End If
   Else
     frmSettings.Show
-    'MsgBox "Random BackGround could not find any valid images in " & Path & ".", vbCritical Or vbSystemModal
+    'frmNotify.Notify "Random BackGround could not find any valid images in " & Path & "."
     FindFiles = vbNullString
     Erase LastFile
   End If
   Exit Function
 Erred:
-  MsgBox "Error in FindFiles: " & Err.Description & vbNewLine & "Path: " & Path, vbCritical
+  frmNotify.Notify "Error in FindFiles: " & Err.Description & vbNewLine & "Path: " & Path
   FindFiles = vbNullString
 End Function
 
@@ -357,7 +357,7 @@ Private Sub Form_Load()
   End If
   Exit Sub
 Erred:
-  MsgBox "Error in Load: " & Err.Description, vbCritical
+  frmNotify.Notify "Error in Load: " & Err.Description
 End Sub
 
 Private Sub LoadSettings()
@@ -397,7 +397,7 @@ Private Sub LoadSettings()
   End If
   Exit Sub
 Erred:
-  MsgBox "Error in LoadSettings: " & Err.Description, vbCritical
+  frmNotify.Notify "Error in LoadSettings: " & Err.Description
   BGColor = 0
   FileDir = App.Path
   Subdirs = False
@@ -410,6 +410,7 @@ End Sub
 
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
   RemDesktopMenu
+  Unload frmNotify
   Unload frmSettings
   Unload frmAbout
 End Sub
@@ -453,7 +454,7 @@ Dim I        As Integer
   End If
   Exit Function
 Erred:
-  MsgBox "Error in GetAllFiles: " & Err.Description & vbNewLine & "Path: " & sPath, vbCritical
+  frmNotify.Notify "Error in GetAllFiles: " & Err.Description & vbNewLine & "Path: " & sPath
   GetAllFiles = vbNullString
 End Function
 
@@ -558,10 +559,10 @@ Dim lMons As Long
 Exit Sub
 Erred:
   If LenB(BG) > 0 Then
-    MsgBox "Unable to load the background " & BG & "!" & vbNewLine & "Please ensure the file is a valid BMP, DIB, JPG, GIF, or PNG image file." & vbNewLine & Err.Description, vbCritical
+    frmNotify.Notify "Unable to load the background " & BG & "!" & vbNewLine & "Please ensure the file is a valid BMP, DIB, JPG, GIF, or PNG image file."
     Err.Clear
   Else
-    MsgBox "Error when attempting to load backgrounds." & Err.Description, vbCritical
+    frmNotify.Notify "Error when attempting to load backgrounds." & Err.Description
     Err.Clear
   End If
 End Sub
@@ -681,7 +682,7 @@ Static LastMons() As Monitor
   LastMons = GetMonitors
   Exit Sub
 Erred:
-  MsgBox "Error in New Background Timer: " & Err.Description, vbCritical
+  frmNotify.Notify "Error in New Background Timer: " & Err.Description
 End Sub
 
 Private Sub TrayIcon_TrayDoubleClick(Button As Integer)
