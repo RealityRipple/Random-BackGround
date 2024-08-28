@@ -132,7 +132,7 @@ Dim lStart  As Long
   sDelimit = vbCrLf
   Request = "GET " & sFile & " HTTP/1.1" & sDelimit & _
             "Host: " & sHost & sDelimit & _
-            "User-Agent: RippleChatBot" & sDelimit & _
+            "User-Agent: none" & sDelimit & _
             "Accept: *" & sDelimit & _
             "Accept-Language: *" & sDelimit & _
             "Accept-Encoding: *" & sDelimit & _
@@ -344,6 +344,7 @@ Private Sub wsHTTP_DataArrival(ByVal BytesTotal As Long)
 Dim sData As String
   CFm_State = htReceiving
   wsHTTP.GetData sData, vbString, BytesTotal
+  If sData = "0" & vbNewLine & vbNewLine Then Exit Sub
   HandleData sData
 End Sub
 
