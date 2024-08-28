@@ -487,6 +487,8 @@ Dim lWidth  As Long
 Dim lHeight As Long
 Dim lMons As Long
   On Error Resume Next
+  If LastTick > GetTickCount - 2000 Then Exit Sub
+  LastTick = GetTickCount
   Mons = GetMonitors
   lMons = GetMonitorCount
   On Error GoTo Erred
