@@ -92,7 +92,7 @@ Option Explicit
 Private Declare Function SetForegroundWindow Lib "user32" (ByVal hwnd As Long) As Long
 Private Declare Function GetTickCount Lib "kernel32" () As Long
 Private Declare Function SetStretchBltMode Lib "gdi32" (ByVal hDC As Long, ByVal nStretchMode As Long) As Long
-Private Declare Function StretchBlt Lib "gdi32" (ByVal hDC As Long, ByVal x As Long, ByVal y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal nSrcWidth As Long, ByVal nSrcHeight As Long, ByVal dwRop As Long) As Long
+Private Declare Function StretchBlt Lib "gdi32" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal xSrc As Long, ByVal ySrc As Long, ByVal nSrcWidth As Long, ByVal nSrcHeight As Long, ByVal dwRop As Long) As Long
 Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As Long
 Private Declare Function DeleteDC Lib "gdi32" (ByVal hDC As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
@@ -416,6 +416,7 @@ Erred:
 End Sub
 
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
+Dim I As Integer
   RemDesktopMenu
   Unload frmNotify
   Unload frmSettings
@@ -479,6 +480,7 @@ End Sub
 
 Public Sub NewBackground(Optional ByVal SetBackground As String = vbNullString)
 Dim Mons()  As Monitor
+Dim iImg    As IPictureDisp
 Dim BG      As String
 Dim I       As Long
 Dim lWidth  As Long
