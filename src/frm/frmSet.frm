@@ -142,7 +142,7 @@ Dim srcH As Long
   SetStretchBltMode pctImage.hDC, 4
   Dim toX As Integer, toY As Integer, toW As Integer, toH As Integer, ratio As Double
   Select Case bPosition
-    Case Fill
+    Case bgPOSITION.Fill
       If (Width / srcW) < (Height / srcH) Then
         'use H Ratio, use W offset
         ratio = Height / srcH
@@ -185,7 +185,7 @@ Dim srcH As Long
       End If
       
       StretchBlt pctImage.hDC, toX, toY, toW, toH, mDC, 0, 0, srcW, srcH, vbSrcCopy
-    Case Fit
+    Case bgPOSITION.Fit
       If (srcW / Width) > (srcH / Height) Then
         'use W Ratio, use H offset
         ratio = srcW / Width
@@ -228,19 +228,19 @@ Dim srcH As Long
       End If
       
       StretchBlt pctImage.hDC, toX, toY, toW, toH, mDC, 0, 0, srcW, srcH, vbSrcCopy
-    Case Stretch
+    Case bgPOSITION.Stretch
       toX = 0
       toY = 0
       toW = Width
       toH = Height
       StretchBlt pctImage.hDC, toX, toY, toW, toH, mDC, 0, 0, srcW, srcH, vbSrcCopy
-    Case Tile
+    Case bgPOSITION.Tile
       For toX = 0 To Width Step srcW
         For toY = 0 To Height Step srcH
           StretchBlt pctImage.hDC, toX, toY, srcW, srcH, mDC, 0, 0, srcW, srcH, vbSrcCopy
         Next toY
       Next toX
-    Case Center
+    Case bgPOSITION.Center
       toX = (Width / 2) - (srcW / 2)
       toY = (Height / 2) - (srcH / 2)
       toW = srcW
