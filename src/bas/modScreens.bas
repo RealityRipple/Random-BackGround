@@ -112,3 +112,91 @@ Dim I As Integer
   On Error GoTo 0
   GetMonitorCount = I + 1
 End Function
+
+Public Function GetDisplayProfile() As String
+Dim Mons()  As Monitor
+Dim I       As Integer
+Dim lMons   As Long
+Dim sRet    As String
+Dim bRet()  As Byte
+  On Error GoTo Erred
+  Mons = GetMonitors
+  lMons = GetMonitorCount
+  If lMons = 0 Then
+    sRet = "1:"
+    sRet = sRet & "["
+    sRet = sRet & "0,"
+    sRet = sRet & "0 "
+    sRet = sRet & Trim$(Str$(Screen.Width / Screen.TwipsPerPixelX)) & "x"
+    sRet = sRet & Trim$(Str$(Screen.Height / Screen.TwipsPerPixelY))
+    sRet = sRet & "]"
+  ElseIf lMons = 1 Then
+    sRet = "1:"
+    sRet = sRet & "["
+    sRet = sRet & Trim$(Str$(Mons(0).Left)) & ","
+    sRet = sRet & Trim$(Str$(Mons(0).Top)) & " "
+    sRet = sRet & Trim$(Str$(Mons(0).Width)) & "x"
+    sRet = sRet & Trim$(Str$(Mons(0).Height))
+    sRet = sRet & "]"
+  Else
+    sRet = Trim$(Str$(lMons)) & ":"
+    For I = 0 To lMons - 1
+      If I > 0 Then sRet = sRet & ","
+      sRet = sRet & "["
+      sRet = sRet & Trim$(Str$(Mons(I).Left)) & ","
+      sRet = sRet & Trim$(Str$(Mons(I).Top)) & " "
+      sRet = sRet & Trim$(Str$(Mons(I).Width)) & "x"
+      sRet = sRet & Trim$(Str$(Mons(I).Height))
+      sRet = sRet & "]"
+    Next I
+  End If
+  ReDim bRet(Len(sRet) - 1)
+  For I = 0 To Len(sRet) - 1
+    bRet(I) = Asc(Mid$(sRet, I + 1, 1))
+  Next I
+  Dim crc As New clsCRC32
+  sRet = Hex(crc.GetByteArrayCrc32(bRet))
+  Do While Len(sRet) < 8
+    sRet = "0" & sRet
+  Loop
+  GetDisplayProfile = sRet
+  Exit Function
+Erred:
+  GetDisplayProfile = "Settings"
+End Function
+
+Public Function GetDisplayDescr() As String()
+Dim Mons()  As Monitor
+Dim I       As Integer
+Dim lMons   As Long
+Dim sRet()  As String
+  On Error GoTo Erred
+  Mons = GetMonitors
+  lMons = GetMonitorCount
+  If lMons = 0 Then
+    ReDim sRet(1)
+    sRet(0) = "1 Monitor:"
+    sRet(1) = Trim$(Str$(Screen.Width / Screen.TwipsPerPixelX)) & "x"
+    sRet(1) = sRet(1) & Trim$(Str$(Screen.Height / Screen.TwipsPerPixelY)) & " at 0,0"
+  ElseIf lMons = 1 Then
+    ReDim sRet(1)
+    sRet(0) = "1 Monitor:"
+    sRet(1) = Trim$(Str$(Mons(0).Width)) & "x"
+    sRet(1) = sRet(1) & Trim$(Str$(Mons(0).Height)) & " at 0,0"
+  Else
+    ReDim sRet(lMons)
+    sRet(0) = Trim$(Str$(lMons)) & " Monitors:"
+    For I = 0 To lMons - 1
+      sRet(I + 1) = Trim$(Str$(Mons(I).Width)) & "x"
+      sRet(I + 1) = sRet(I + 1) & Trim$(Str$(Mons(I).Height)) & " at "
+      sRet(I + 1) = sRet(I + 1) & Trim$(Str$(Mons(I).Left)) & ","
+      sRet(I + 1) = sRet(I + 1) & Trim$(Str$(Mons(I).Top))
+    Next I
+  End If
+  GetDisplayDescr = sRet
+  Exit Function
+Erred:
+  ReDim sRet(0)
+  sRet(0) = "Failure"
+  GetDisplayDescr = sRet
+End Function

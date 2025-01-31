@@ -15,6 +15,7 @@ Module=modGDIPlus; src\bas\modGDIPlus.bas
 Module=modIActiveDesktop; src\bas\modIActiveDesktop.bas
 ResFile32="src\RBG.RES"
 Form=src\frm\frmNotify.frm
+Class=clsCRC32; src\cls\clsCRC32.cls
 IconForm="frmAbout"
 Startup="Sub Main"
 HelpFile=""

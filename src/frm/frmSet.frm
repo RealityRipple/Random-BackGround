@@ -367,19 +367,91 @@ Erred:
   frmNotify.Notify "Error in Load: " & Err.Description
 End Sub
 
-Private Sub LoadSettings()
+Private Sub LoadProfile()
+Dim sProfile  As String
+Dim sColor    As String
+Dim sSubdirs  As String
+Dim sInterval As String
+Dim lPosition As Long
+Dim sPosition As String
+Dim lMaxScale As Long
+Dim sMaxScale As String
+Dim sUnique   As String
   On Error GoTo Erred
-  BGColor = ReadINI("Settings", "Color", "config.ini", "0")
-  FileDir = ReadINI("Settings", "Directory", "config.ini", "%APP%")
-  Subdirs = ReadINI("Settings", "Subdirectories", "config.ini", "N") = "Y"
-  lInterval = ReadINI("Settings", "Interval", "config.ini", "180")
-  bPosition = ReadINI("Settings", "Position", "config.ini", "1")
-  bMaxScale = ReadINI("Settings", "MaxScale", "config.ini", "0")
-  Unique = ReadINI("Settings", "Unique", "config.ini", "Y") = "Y"
+  sProfile = GetDisplayProfile
+
+  sColor = ReadINI(sProfile, "Color", "config.ini", "UNSET")
+  If sColor = "UNSET" Then sColor = ReadINI("Settings", "Color", "config.ini", "0")
+  If IsNumeric(sColor) Then
+    BGColor = Val(sColor)
+  Else
+    BGColor = 0
+  End If
+
+  FileDir = ReadINI(sProfile, "Directory", "config.ini", "UNSET")
+  If FileDir = "UNSET" Then FileDir = ReadINI("Settings", "Directory", "config.ini", "%APP%")
+
+  sSubdirs = ReadINI(sProfile, "Subdirectories", "config.ini", "UNSET")
+  If sSubdirs = "UNSET" Then sSubdirs = ReadINI("Settings", "Subdirectories", "config.ini", "N")
+  Subdirs = sSubdirs = "Y"
+
+  sInterval = ReadINI(sProfile, "Interval", "config.ini", "UNSET")
+  If sInterval = "UNSET" Then sInterval = ReadINI("Settings", "Interval", "config.ini", "180")
+  If IsNumeric(sInterval) Then
+    lInterval = Val(sInterval)
+  Else
+    lInterval = 180
+  End If
+
+  sPosition = ReadINI(sProfile, "Position", "config.ini", "UNSET")
+  If sPosition = "UNSET" Then sPosition = ReadINI("Settings", "Position", "config.ini", "1")
+  If IsNumeric(sPosition) Then
+    lPosition = Val(sPosition)
+    If lPosition >= 0 And lPosition <= 5 Then
+      bPosition = lPosition
+    Else
+      bPosition = bgPOSITION.Fit
+    End If
+  Else
+    bPosition = bgPOSITION.Fit
+  End If
+
+  sMaxScale = ReadINI(sProfile, "MaxScale", "config.ini", "UNSET")
+  If sMaxScale = "UNSET" Then sMaxScale = ReadINI("Settings", "MaxScale", "config.ini", "0")
+  If IsNumeric(sMaxScale) Then
+    lMaxScale = Val(sMaxScale)
+    If lMaxScale >= 0 And lMaxScale <= 9 Then
+      bMaxScale = lMaxScale
+    Else
+      bMaxScale = bgMAXSCALE.Unlimited
+    End If
+  Else
+    bMaxScale = bgMAXSCALE.Unlimited
+  End If
+
+  sUnique = ReadINI(sProfile, "Unique", "config.ini", "UNSET")
+  If sUnique = "UNSET" Then sUnique = ReadINI("Settings", "Unique", "config.ini", "Y")
+  Unique = sUnique = "Y"
+
   If FileDir = "%APP%" Then FileDir = App.Path
   Do While Right$(FileDir, 1) = "\" Or Right$(FileDir, 1) = "/"
     FileDir = Left$(FileDir, Len(FileDir) - 1)
   Loop
+  Exit Sub
+Erred:
+  frmNotify.Notify "Error in LoadProfile: " & Err.Description
+  BGColor = 0
+  FileDir = App.Path
+  Subdirs = False
+  lInterval = 180
+  bPosition = bgPOSITION.Fit
+  bMaxScale = bgMAXSCALE.Unlimited
+  Unique = True
+End Sub
+
+Private Sub LoadSettings()
+  On Error GoTo Erred
+  LoadProfile
   If ReadINI("Settings", "Assoc", "config.ini", "N") = "Y" Then
     SetAssoc
   Else
@@ -405,13 +477,6 @@ Private Sub LoadSettings()
   Exit Sub
 Erred:
   frmNotify.Notify "Error in LoadSettings: " & Err.Description
-  BGColor = 0
-  FileDir = App.Path
-  Subdirs = False
-  lInterval = 180
-  bPosition = Fit
-  bMaxScale = Unlimited
-  Unique = True
   LastTick = GetTickCount - (180 * 1000 - 10)
 End Sub
 
@@ -667,30 +732,19 @@ Public Sub SetDesktopMenu()
 End Sub
 
 Private Sub tmrNewBG_Timer()
-Static LastMons() As Monitor
+Static LastProf As String
+Dim thisProf    As String
   On Error GoTo Erred
-  If LastTick <= GetTickCount - (lInterval * 1000) And lInterval > 0 Then NewBackground
-  Dim Mons() As Monitor
-  Dim lMons As Long
-  Mons = GetMonitors
-  lMons = GetMonitorCount
-  If lMons = 0 Then Exit Sub
-  Dim I As Integer
-  I = -1
-  On Error Resume Next
-  I = UBound(LastMons)
-  On Error GoTo Erred
-  If I = -1 Then LastMons = GetMonitors
-  For I = 0 To lMons - 1
-    If I > UBound(LastMons) Then
-      NewBackground
-      Exit For
-    ElseIf Not (Mons(I).Top = LastMons(I).Top And Mons(I).Left = LastMons(I).Left And Mons(I).Width = LastMons(I).Width And Mons(I).Height = LastMons(I).Height) Then
-      NewBackground
-      Exit For
+  thisProf = GetDisplayProfile
+  If thisProf = LastProf Then
+    If lInterval > 0 Then
+        If LastTick <= GetTickCount - (lInterval * 1000) Then NewBackground
     End If
-  Next I
-  LastMons = GetMonitors
+    Exit Sub
+  End If
+  LoadProfile
+  NewBackground
+  LastProf = thisProf
   Exit Sub
 Erred:
   frmNotify.Notify "Error in New Background Timer: " & Err.Description

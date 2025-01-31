@@ -227,39 +227,47 @@ Private Sub cmdCancel_Click()
 End Sub
 
 Private Sub cmdOK_Click()
-  frmSet.FileDir = dirBG.Path
-  WriteINI "Settings", "Directory", dirBG.Path, "config.ini"
-  If chkSubDir.Value = 1 Then
-    WriteINI "Settings", "Subdirectories", "Y", "config.ini"
-    frmSet.Subdirs = True
+Dim sProfile   As String
+Dim sWriteTo() As String
+Dim sDescrs()  As String
+Dim I          As Integer
+  sProfile = GetDisplayProfile
+  If sProfile = "Settings" Then
+    ReDim sWriteTo(1)
+    sWriteTo(1) = "Settings"
   Else
-    WriteINI "Settings", "Subdirectories", "N", "config.ini"
-    frmSet.Subdirs = False
+    ReDim sWriteTo(2)
+    sWriteTo(1) = "Settings"
+    sWriteTo(2) = sProfile
+    sDescrs = GetDisplayDescr
+    WriteINI sProfile, "Info", sDescrs(0), "config.ini"
+    If UBound(sDescrs) > 0 Then
+      For I = 1 To UBound(sDescrs)
+        WriteINI sProfile, "Info_" & Trim$(Str$(I)), sDescrs(I), "config.ini"
+      Next I
+    End If
   End If
-  frmSet.tmrNewBG.Enabled = True
-  If cmbTime.ListIndex >= 0 Then
-    frmSet.lInterval = cmbTime.ItemData(cmbTime.ListIndex)
-    WriteINI "Settings", "Interval", cmbTime.ItemData(cmbTime.ListIndex), "config.ini"
-  Else
-    frmSet.lInterval = 0
-    WriteINI "Settings", "Interval", 0, "config.ini"
-  End If
-  If cmbPosition.ListIndex >= 0 Then
-    frmSet.bPosition = cmbPosition.ListIndex
-    WriteINI "Settings", "Position", cmbPosition.ListIndex, "config.ini"
-  Else
-    frmSet.bPosition = Fit
-    WriteINI "Settings", "Position", 0, "config.ini"
-  End If
-  If cmbMaxScale.ListIndex >= 0 Then
-    frmSet.bMaxScale = cmbMaxScale.ListIndex
-    WriteINI "Settings", "MaxScale", cmbMaxScale.ListIndex, "config.ini"
-  Else
-    frmSet.bMaxScale = Unlimited
-    WriteINI "Settings", "MaxScale", cmbMaxScale.ListIndex, "config.ini"
-  End If
-  WriteINI "Settings", "Color", cmdBackground.BackColor, "config.ini"
-  frmSet.BGColor = cmdBackground.BackColor
+  For I = 0 To UBound(sWriteTo)
+    If I = 0 Then
+      frmSet.FileDir = dirBG.Path
+      frmSet.Subdirs = chkSubDir.Value = 1
+      frmSet.lInterval = IIf(cmbTime.ListIndex < 0, 0, cmbTime.ItemData(cmbTime.ListIndex))
+      frmSet.bPosition = IIf(cmbPosition.ListIndex < 0, bgPOSITION.Fit, cmbPosition.ListIndex)
+      frmSet.bMaxScale = IIf(cmbMaxScale.ListIndex < 0, bgMAXSCALE.Unlimited, cmbMaxScale.ListIndex)
+      frmSet.BGColor = cmdBackground.BackColor
+      frmSet.Unique = chkUnique.Value = 1
+    Else
+      WriteINI sWriteTo(I), "Directory", dirBG.Path, "config.ini"
+      WriteINI sWriteTo(I), "Subdirectories", IIf(chkSubDir.Value = 1, "Y", "N"), "config.ini"
+      WriteINI sWriteTo(I), "Interval", IIf(cmbTime.ListIndex < 0, "180", Trim$(Str$(cmbTime.ItemData(cmbTime.ListIndex)))), "config.ini"
+      WriteINI sWriteTo(I), "Position", IIf(cmbPosition.ListIndex < 0, Trim$(Str$(bgPOSITION.Fit)), Trim$(Str$(cmbPosition.ListIndex))), "config.ini"
+      WriteINI sWriteTo(I), "MaxScale", IIf(cmbMaxScale.ListIndex < 0, Trim$(Str$(bgMAXSCALE.Unlimited)), Trim$(Str$(cmbMaxScale.ListIndex))), "config.ini"
+      WriteINI sWriteTo(I), "Color", Trim$(Str$(cmdBackground.BackColor)), "config.ini"
+      WriteINI sWriteTo(I), "Unique", IIf(chkUnique.Value = 1, "Y", "N"), "config.ini"
+    End If
+  Next I
+  frmSet.tmrNewBG.Enabled = Not frmSet.mnuPause.Checked
+
   If chkBoot.Value = 1 Then
     WriteINI "Settings", "Boot", "Y", "config.ini"
     regCreate_Value_SZ HKEY_CURRENT_USER, "SOFTWARE\Microsoft\Windows\CurrentVersion\Run", "RBG", App.Path & "\" & App.EXEName & ".exe"
@@ -280,13 +288,6 @@ Private Sub cmdOK_Click()
   Else
     WriteINI "Settings", "DesktopMenu", "N", "config.ini"
     frmSet.RemDesktopMenu
-  End If
-  If chkUnique.Value = 1 Then
-    WriteINI "Settings", "Unique", "Y", "config.ini"
-    frmSet.Unique = True
-  Else
-    WriteINI "Settings", "Unique", "N", "config.ini"
-    frmSet.Unique = False
   End If
   If chkSmooth.Value = 1 Then
     WriteINI "Settings", "Smooth", "Y", "config.ini"
@@ -309,28 +310,45 @@ Erred:
   dirBG.Path = Temp
 End Sub
 
-Private Sub Form_Load()
-Dim BGDir    As String
-Dim DefDir   As String
-Dim Position As String
-Dim MaxScale As String
-Dim I        As Integer
-  DefDir = PicturesFolder
-  BGDir = ReadINI("Settings", "Directory", "config.ini", PicturesFolder & "\")
-  If LenB(Dir$(BGDir, vbDirectory)) = 0 Or LenB(BGDir) = 0 Then BGDir = PicturesFolder & "\"
-  dirBG.Path = BGDir
-  drvBG.Drive = Left$(BGDir, 3)
-  chkSubDir.Value = IIf(ReadINI("Settings", "Subdirectories", "config.ini", "N") = "Y", 1, 0)
+Private Sub LoadProfile()
+Dim sProfile  As String
+Dim sBGDir    As String
+Dim sDefDir   As String
+Dim sSubdir   As String
+Dim sTime     As String
+Dim lPosition As Long
+Dim sPosition As String
+Dim lMaxScale As Long
+Dim sMaxScale As String
+Dim sBGColor  As String
+Dim sUnique   As String
+Dim I         As Integer
+  sProfile = GetDisplayProfile
+
+  sDefDir = PicturesFolder
+  sBGDir = ReadINI(sProfile, "Directory", "config.ini", "UNSET")
+  If sBGDir = "UNSET" Then sBGDir = ReadINI("Settings", "Directory", "config.ini", sDefDir & "\")
+  If LenB(Dir$(sBGDir, vbDirectory)) = 0 Or LenB(sBGDir) = 0 Then sBGDir = sDefDir & "\"
+  dirBG.Path = sBGDir
+  drvBG.Drive = Left$(sBGDir, 3)
+
+  sSubdir = ReadINI(sProfile, "Subdirectories", "config.ini", "UNSET")
+  If sSubdir = "UNSET" Then sSubdir = ReadINI("Settings", "Subdirectories", "config.ini", "N")
+  chkSubDir.Value = IIf(sSubdir = "Y", 1, 0)
+
+  sTime = ReadINI(sProfile, "Interval", "config.ini", "UNSET")
+  If sTime = "UNSET" Then sTime = ReadINI("Settings", "Interval", "config.ini", "180")
   For I = 0 To cmbTime.ListCount - 1
-    If cmbTime.ItemData(I) = ReadINI("Settings", "Interval", "config.ini", "180") Then
+    If cmbTime.ItemData(I) = sTime Then
       cmbTime.ListIndex = I
       Exit For
     End If
   Next I
-  
-  Position = ReadINI("Settings", "Position", "config.ini", "1")
-  If IsNumeric(Position) Then
-    Dim lPosition As Long: lPosition = Int(Position)
+
+  sPosition = ReadINI(sProfile, "Position", "config.ini", "UNSET")
+  If sPosition = "UNSET" Then sPosition = ReadINI("Settings", "Position", "config.ini", "1")
+  If IsNumeric(sPosition) Then
+    lPosition = Val(sPosition)
     If lPosition >= 0 And lPosition <= 5 Then
       cmbPosition.ListIndex = lPosition
     Else
@@ -339,10 +357,11 @@ Dim I        As Integer
   Else
     cmbPosition.ListIndex = bgPOSITION.Fit
   End If
-  
-  MaxScale = ReadINI("Settings", "MaxScale", "config.ini", "0")
-  If IsNumeric(MaxScale) Then
-    Dim lMaxScale As Long: lMaxScale = Int(MaxScale)
+
+  sMaxScale = ReadINI(sProfile, "MaxScale", "config.ini", "UNSET")
+  If sMaxScale = "UNSET" Then sMaxScale = ReadINI("Settings", "MaxScale", "config.ini", "0")
+  If IsNumeric(sMaxScale) Then
+    lMaxScale = Val(sMaxScale)
     If lMaxScale >= 0 And lMaxScale <= 9 Then
       cmbMaxScale.ListIndex = lMaxScale
     Else
@@ -351,8 +370,29 @@ Dim I        As Integer
   Else
     cmbMaxScale.ListIndex = bgMAXSCALE.Unlimited
   End If
-  
-  cmdBackground.BackColor = ReadINI("Settings", "Color", "config.ini", "0")
+
+  sBGColor = ReadINI(sProfile, "Color", "config.ini", "UNSET")
+  If sBGColor = "UNSET" Then sBGColor = ReadINI("Settings", "Color", "config.ini", "0")
+  If IsNumeric(sBGColor) Then
+    cmdBackground.BackColor = Val(sBGColor)
+  Else
+    cmdBackground.BackColor = 0
+  End If
+
+  If GetMonitorCount < 2 Then
+    chkUnique.Enabled = False
+    chkUnique.Value = 0
+  Else
+    chkUnique.Enabled = True
+    sUnique = ReadINI(sProfile, "Unique", "config.ini", "UNSET")
+    If sUnique = "UNSET" Then sUnique = ReadINI("Settings", "Unique", "config.ini", "Y")
+    chkUnique.Value = IIf(sUnique = "Y", 1, 0)
+  End If
+End Sub
+
+Private Sub Form_Load()
+  LoadProfile
+
   chkBoot.Value = IIf(ReadINI("Settings", "Boot", "config.ini", "Y") = "Y", 1, 0)
   If HasSysAssoc Then
     chkAssoc.Enabled = False
@@ -372,11 +412,15 @@ Dim I        As Integer
     chkDesktopMenu.Enabled = True
     chkDesktopMenu.Value = IIf(ReadINI("Settings", "DesktopMenu", "config.ini", "N") = "Y", 1, 0)
   End If
-  If GetMonitorCount < 2 Then
-    chkUnique.Enabled = False
-    chkUnique.Value = 0
-  Else
-    chkUnique.Enabled = True
-    chkUnique.Value = IIf(ReadINI("Settings", "Unique", "config.ini", "Y") = "Y", 1, 0)
-  End If
+End Sub
+
+Private Sub tmrProfChange_Timer()
+Static LastProf As String
+Dim thisProf    As String
+  On Error Resume Next
+  If Not Me.Visible Then Exit Sub
+  thisProf = GetDisplayProfile
+  If thisProf = LastProf Then Exit Sub
+  LoadProfile
+  LastProf = thisProf
 End Sub
