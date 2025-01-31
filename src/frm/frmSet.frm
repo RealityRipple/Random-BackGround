@@ -163,7 +163,7 @@ Dim srcH As Long
         toX = 0
         toY = 0
       End If
-      
+
       If bMaxScale <> Unlimited Then
         Select Case bMaxScale
           Case bgMAXSCALE.X1:   ratio = 1
@@ -183,7 +183,7 @@ Dim srcH As Long
           toY = (Height / 2) - (toH / 2)
         End If
       End If
-      
+
       StretchBlt pctImage.hDC, toX, toY, toW, toH, mDC, 0, 0, srcW, srcH, vbSrcCopy
     Case bgPOSITION.Fit
       If (srcW / Width) > (srcH / Height) Then
@@ -206,7 +206,7 @@ Dim srcH As Long
         toX = 0
         toY = 0
       End If
-      
+
       If bMaxScale <> Unlimited Then
         Select Case bMaxScale
           Case bgMAXSCALE.X1:   ratio = 1
@@ -226,7 +226,7 @@ Dim srcH As Long
           toY = (Height / 2) - (toH / 2)
         End If
       End If
-      
+
       StretchBlt pctImage.hDC, toX, toY, toW, toH, mDC, 0, 0, srcW, srcH, vbSrcCopy
     Case bgPOSITION.Stretch
       toX = 0
@@ -481,7 +481,6 @@ Erred:
 End Sub
 
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
-Dim I As Integer
   RemDesktopMenu
   Unload frmNotify
   Unload frmSettings

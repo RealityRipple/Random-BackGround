@@ -1,8 +1,8 @@
 Attribute VB_Name = "modMain"
 Option Explicit
 Private Type tagInitCommonControlsEx
-   lngSize As Long
-   lngICC As Long
+  lngSize As Long
+  lngICC As Long
 End Type
 Public Enum bgPOSITION
   Fill
