@@ -59,20 +59,21 @@ End Function
 
 Public Sub Main()
   InitCommonControlsVB
-  If LenB(Command$) = 0 Then
-    Load frmSet
-    frmSet.Hide
-  ElseIf Left$(Command$, 5) = "/set " Then
-    If LenB(Dir$(Mid$(Command$, 6), vbNormal Or vbHidden Or vbSystem Or vbReadOnly)) > 0 Then
+  If LenB(Command$) > 0 Then
+    If Left$(Command$, 5) = "/set " Then
+      If LenB(Dir$(Mid$(Command$, 6), vbNormal Or vbHidden Or vbSystem Or vbReadOnly)) > 0 Then
+        Load frmSet
+        frmSet.NewBackground Mid$(Command$, 6)
+      End If
+      End
+    ElseIf Command$ = "/next" Then
       Load frmSet
-      frmSet.NewBackground Mid$(Command$, 6)
+      frmSet.NewBackground
+      End
     End If
-    End
-  ElseIf Command$ = "/next" Then
-    Load frmSet
-    frmSet.NewBackground
-    End
   End If
+  Load frmSet
+  frmSet.Hide
 End Sub
 
 Public Function HasSysAssoc() As Boolean
