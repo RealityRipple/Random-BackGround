@@ -223,7 +223,10 @@ Private Sub httpUpdate_DownloadComplete(sData As String)
     Open SettingsFolder & "\Setup.exe" For Binary Access Write As #nFile
     Put #nFile, , sData
     Close #nFile
-    Shell SettingsFolder & "\Setup.exe /silent", vbNormalFocus
+    Dim sVer As String
+    sVer = App.Major & "." & App.Minor
+    If App.Revision > 0 Then sVer = sVer & "." & App.Revision
+    Shell SettingsFolder & "\Setup.exe /silent /noicons /update=""" & sVer & """", vbNormalFocus
     End
   End If
 Exit Sub
