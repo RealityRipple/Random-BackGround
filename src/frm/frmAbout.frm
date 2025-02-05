@@ -178,7 +178,11 @@ Private Sub Form_Load()
   imgIcon.ToolTipText = App.Title
   lblProduct.Caption = App.Title
   lblCompany.Caption = "a " & App.CompanyName & " product"
-  lblVersion.Caption = "Version " & App.Major & "." & App.Minor & "." & App.Revision
+  If App.Revision = 0 Then
+    lblVersion.Caption = "Version " & App.Major & "." & App.Minor
+  Else
+    lblVersion.Caption = "Version " & App.Major & "." & App.Minor & "." & App.Revision
+  End If
   httpUpdate.Tag = "VER"
   httpUpdate.OpenURL ("http://update.realityripple.com/Random_BackGround/ver.txt")
 End Sub
