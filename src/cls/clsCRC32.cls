@@ -12,38 +12,38 @@ Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
-Private crc32Table()  As Long
+
+Const CRC_SEED As Long = &HEDB88320
+
+Private crcTable(255) As Long
 
 Private Sub Class_Initialize()
-Dim dwPolynomial  As Long
-Dim I             As Integer
-Dim J             As Integer
-Dim dwCrc         As Long
-  dwPolynomial = &HEDB88320
-  ReDim crc32Table(256)
+Dim I As Integer
+Dim J As Integer
+Dim L As Long
   For I = 0 To 255
-    dwCrc = I
+    L = I
     For J = 8 To 1 Step -1
-      If dwCrc And 1 Then
-        dwCrc = ((dwCrc And &HFFFFFFFE) \ 2&) And &H7FFFFFFF
-        dwCrc = dwCrc Xor dwPolynomial
+      If L And 1 Then
+        L = ((L And &HFFFFFFFE) \ 2&) And MAX_LONG
+        L = L Xor CRC_SEED
       Else
-        dwCrc = ((dwCrc And &HFFFFFFFE) \ 2&) And &H7FFFFFFF
+        L = ((L And &HFFFFFFFE) \ 2&) And MAX_LONG
       End If
     Next J
-    crc32Table(I) = dwCrc
+    crcTable(I) = L
   Next I
 End Sub
 
-Public Function GetByteArrayCrc32(ByRef buffer() As Byte) As Long
-Dim crc32Result As Long
-Dim I           As Long
-Dim iLookup     As Integer
-  crc32Result = &HFFFFFFFF
+Public Function Check(ByRef buffer() As Byte) As Long
+Dim ret As Long
+Dim idx As Integer
+Dim I   As Long
+  ret = &HFFFFFFFF
   For I = LBound(buffer) To UBound(buffer)
-    iLookup = (crc32Result And &HFF) Xor buffer(I)
-    crc32Result = ((crc32Result And &HFFFFFF00) \ &H100) And 16777215
-    crc32Result = crc32Result Xor crc32Table(iLookup)
+    idx = (ret And &HFF) Xor buffer(I)
+    ret = ((ret And &HFFFFFF00) \ &H100) And &HFFFFFF
+    ret = ret Xor crcTable(idx)
   Next I
-  GetByteArrayCrc32 = Not (crc32Result)
+  Check = Not ret
 End Function

@@ -153,7 +153,7 @@ Dim bRet()  As Byte
     bRet(I) = Asc(Mid$(sRet, I + 1, 1))
   Next I
   Dim crc As New clsCRC32
-  sRet = Hex(crc.GetByteArrayCrc32(bRet))
+  sRet = Hex(crc.Check(bRet))
   Do While Len(sRet) < 8
     sRet = "0" & sRet
   Loop
