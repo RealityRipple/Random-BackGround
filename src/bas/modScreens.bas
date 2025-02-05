@@ -87,8 +87,6 @@ Dim mCnt    As Long
       If CBool(dd.StateFlags And &H1) Then
         hm = MonitorFromPoint(dm.dmPosition.x, dm.dmPosition.y, 0)
         If hm <> 0 Then GetMonitorInfo hm, mi
-      End If
-      If CBool(dd.StateFlags And &H1) Then
         ReDim Preserve Mons(mCnt)
         Mons(mCnt).Top = mi.rcMonitor.Top
         Mons(mCnt).Left = mi.rcMonitor.Left
