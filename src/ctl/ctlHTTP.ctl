@@ -62,7 +62,7 @@ Private Initiating  As Boolean
 
 Public Sub About()
 Attribute About.VB_UserMemId = -552
-  MsgBox "RealityRipple's HTTP control ©2007-2011 " & App.CompanyName & "." & vbNewLine & vbNewLine & "Designed for " & App.ProductName & ".", vbInformation + vbOKOnly, "About RealityRipple's HTTP control"
+  MsgBox "RealityRipple's HTTP control ©2007-2025 " & App.CompanyName & "." & vbNewLine & vbNewLine & "Designed for " & App.ProductName & ".", vbInformation + vbOKOnly, "About RealityRipple's HTTP control"
 End Sub
 
 Private Sub AddToPacket(ByVal Data As String)
@@ -75,6 +75,42 @@ End Property
 
 Public Property Get BytesTotal() As Long
   BytesTotal = DataLen
+End Property
+
+Public Property Get HeaderKeys() As String()
+Dim sRet() As String
+Dim sKey   As String
+Dim I      As Integer
+  On Error GoTo Erred
+  ReDim sRet(UBound(Headers) - 1)
+  For I = 1 To UBound(Headers)
+    sKey = Headers(I)
+    If InStr(sKey, ":") > 0 Then sKey = Left$(sKey, InStr(sKey, ":") - 1)
+    sRet(I - 1) = Trim$(sKey)
+  Next I
+  HeaderKeys = sRet
+  Exit Property
+Erred:
+  Erase sRet
+  HeaderKeys = sRet
+End Property
+
+Public Property Get HeaderValue(ByVal sFind As String) As String
+Dim sKey As String
+Dim I     As Integer
+  On Error GoTo Erred
+  For I = 1 To UBound(Headers)
+    sKey = Headers(I)
+    If InStr(sKey, ":") > 0 Then sKey = Left$(sKey, InStr(sKey, ":") - 1)
+    sKey = Trim$(sKey)
+    If LCase$(sFind) = LCase$(sKey) Then
+      HeaderValue = Trim$(Mid$(Headers(I), InStr(Headers(I), ":") + 1))
+      Exit For
+    End If
+  Next I
+  Exit Property
+Erred:
+  HeaderValue = ""
 End Property
 
 Public Sub Disconnect()

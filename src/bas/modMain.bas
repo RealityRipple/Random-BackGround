@@ -58,7 +58,14 @@ Public Function InitCommonControlsVB() As Boolean
 End Function
 
 Public Sub Main()
+Dim I As Long
   InitCommonControlsVB
+
+  For I = 0 To 14
+      pow2I(I) = 2 ^ I
+  Next I
+  pow2I(15) = &H8000
+
   If LenB(Command$) > 0 Then
     If Left$(Command$, 5) = "/set " Then
       If LenB(Dir$(Mid$(Command$, 6), vbNormal Or vbHidden Or vbSystem Or vbReadOnly)) > 0 Then

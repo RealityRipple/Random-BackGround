@@ -167,12 +167,22 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
 Private Declare Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" (ByVal hwnd As Long, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Long) As Long
+Const RSA_EXP  As Long = &H10001
+Const PAD_PRE  As String = "0001"
+Const PAD_CT   As Long = 852
+Const PAD_POST As String = "00"
+Const PAD_ASN  As String = "3051300d060960864801650304020305000440"
+Const PUB_KEY As String = "qVlYy2ZAVtkUJghbFCWan6Z68hicfPuZpoV874ti1d+GjgdaRqCuPijap/35RjEPcTCYt90hCsrWqdfa2bK2eQlBhnZiyqU8Ky/HTYq2msKIU9NEslBJEb6ZeszOfuU9DZy69c97ljDIUqLvwqUFxDPs8np83IF1UHBpWdIRuPbOtGAbZi5KuIk8CVhKoxNBTSX3weJORo6LXIp4J7W1WBafJHX8I5GlVqnQaCq1w0KYHHJyQ//FWrBMoPPaHZGR94bqWGMrEl4XEcT2I5QcuixnEhgL9nQp/QmgvPkI3/ehAcv5oBlCjCSwZBx9mGTcwSXUEaNWcjF+rPLMijDz/zSQ0Fpuq6Ta1XmEc7KPomf7Ly0XgIXAQBj8jNeoSwvwbETi8D2Ht6U85S8hcKudD/otlZy/3sjSQFLwLtjBMQLH83N+LYsFn34jRYFOySvL4MUBeBpf0zfODzpcxqpLRkvCrFY7Cxr3j3jvUxtH/VY0Y7pRTspvqtDNYAh6JiwsiFtG7pPlKkLj+CYmsdfDd/YnJPcTP7oNnVhIqZ2ZSe2EpwETKP6um/CDFXdPifFX+ViEsUuUM/uTeZYDAILAhnb7WSx7bWPc6qOGL8X5XsQ2Oa4QDlMhEvy3zFErBdMcwzKS7hhSXjMerq0Xn4G8iNVQJnVYuqTnPoIKEpvKeos"
+Private checkHash As String
+
 Private Sub cmdHire_Click()
   ShellExecute 0, "", "http://realityripple.com/donate.php?itm=Random+BackGround", "", "", vbNormalFocus
 End Sub
+
 Private Sub cmdOK_Click()
   Unload Me
 End Sub
+
 Private Sub Form_Load()
   Me.Caption = "About " & App.Title
   imgIcon.ToolTipText = App.Title
@@ -184,55 +194,134 @@ Private Sub Form_Load()
     lblVersion.Caption = "Version " & App.Major & "." & App.Minor & "." & App.Revision
   End If
   httpUpdate.Tag = "VER"
-  httpUpdate.OpenURL ("http://update.realityripple.com/Random_BackGround/ver.txt")
+  httpUpdate.OpenURL ("http://update.realityripple.com/Random_BackGround/update.ver?sha=512")
+  Me.MousePointer = vbHourglass
 End Sub
+
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
   Set frmAbout = Nothing
 End Sub
+
 Private Sub httpUpdate_DownloadComplete(sData As String)
   On Error GoTo Erred
   If httpUpdate.Tag = "VER" Then
-    Dim sTmp() As String
-    sTmp = Split(sData, "|", 2)
-    Dim sRemoteVer() As String
-    sRemoteVer = Split(sTmp(0), ".")
-    Dim NewVer As Boolean
-    NewVer = False
-    If sRemoteVer(0) > App.Major Then
-      NewVer = True
-    ElseIf sRemoteVer(0) = App.Major Then
-      If sRemoteVer(1) > App.Minor Then
-        NewVer = True
-      ElseIf sRemoteVer(1) = App.Minor Then
-        If sRemoteVer(2) > App.Revision Then NewVer = True
-      End If
-    End If
-    If NewVer Then
-      lblUpdates.Caption = "New Update Available"
-      DoEvents
-      httpUpdate.Tag = "FILE"
-      tmrUpdate.Enabled = True
-      httpUpdate.OpenURL (sTmp(1))
+    Dim sSig As String
+    sSig = httpUpdate.HeaderValue("X-Update-Signature")
+    lblUpdates.Caption = "Checking Signature..."
+    DoEvents
+    If Not VerifySignature(sData, sSig) Then
+      Me.MousePointer = vbDefault
+      lblUpdates.Caption = "Update failure. Information signature mismatch."
     Else
-      lblUpdates.Caption = "No New Updates"
+      Me.MousePointer = vbDefault
+      Dim sTmp() As String
+      sTmp = Split(sData, "|", 3)
+      Dim sRemoteVer() As String
+      sRemoteVer = Split(sTmp(0), ".")
+      checkHash = sTmp(2)
+      Dim NewVer As Boolean
+      NewVer = False
+      If sRemoteVer(0) > App.Major Then
+        NewVer = True
+      ElseIf sRemoteVer(0) = App.Major Then
+        If sRemoteVer(1) > App.Minor Then
+          NewVer = True
+        ElseIf sRemoteVer(1) = App.Minor Then
+          If sRemoteVer(2) > App.Revision Then NewVer = True
+        End If
+      End If
+      If NewVer Then
+        lblUpdates.Caption = "New Update Available"
+        DoEvents
+        httpUpdate.Tag = "FILE"
+        tmrUpdate.Enabled = True
+        httpUpdate.OpenURL ("http:" & sTmp(1))
+      Else
+        lblUpdates.Caption = "No New Updates"
+      End If
     End If
   Else
     tmrUpdate.Enabled = False
-    lblUpdates.Caption = "Download Complete"
-    Dim nFile As Integer: nFile = FreeFile
-    Open SettingsFolder & "\Setup.exe" For Binary Access Write As #nFile
-    Put #nFile, , sData
-    Close #nFile
-    Dim sVer As String
-    sVer = App.Major & "." & App.Minor
-    If App.Revision > 0 Then sVer = sVer & "." & App.Revision
-    Shell SettingsFolder & "\Setup.exe /silent /noicons /update=""" & sVer & """", vbNormalFocus
-    End
+    lblUpdates.Caption = "Checking Integrity..."
+    Me.MousePointer = vbHourglass
+    DoEvents
+    If modSHA512.Hash(sData) = checkHash Then
+      Me.MousePointer = vbDefault
+      lblUpdates.Caption = "Download Complete"
+      DoEvents
+      Dim nFile As Integer: nFile = FreeFile
+      Open SettingsFolder & "\Setup.exe" For Binary Access Write As #nFile
+      Put #nFile, , sData
+      Close #nFile
+      Dim sVer As String
+      sVer = App.Major & "." & App.Minor
+      If App.Revision > 0 Then sVer = sVer & "." & App.Revision
+      Shell SettingsFolder & "\Setup.exe /silent /noicons /update=""" & sVer & """", vbNormalFocus
+      End
+    Else
+      Me.MousePointer = vbDefault
+      lblUpdates.Caption = "Update failure. Installer hash mismatch."
+    End If
   End If
 Exit Sub
 Erred:
   lblUpdates.Caption = "Update failure. " & Err.Description
 End Sub
+
+Public Function VerifySignature(ByVal Message As String, ByVal Signature As String) As Boolean
+Dim bKey() As Byte
+Dim bSig() As Byte
+Dim biKey  As InfInt
+Dim biSig  As InfInt
+Dim biMod  As InfInt
+Dim biRet  As InfInt
+Dim sHash  As String
+Dim sMatch As String
+  On Error GoTo Erred
+  If LenB(Signature) = 0 Then
+    VerifySignature = False
+    Exit Function
+  End If
+  sHash = modSHA512.Hash(Message)
+  If LenB(sHash) = 0 Then
+    VerifySignature = False
+    Exit Function
+  End If
+  bKey = Base64Decode(PUB_KEY)
+  bSig = Base64Decode(Signature)
+  If UBound(bKey) <> 511 Then
+    VerifySignature = False
+    Exit Function
+  End If
+  If UBound(bSig) <> 511 Then
+    VerifySignature = False
+    Exit Function
+  End If
+  sMatch = PAD_PRE & String$(PAD_CT, "f") & PAD_POST + PAD_ASN + sHash
+  Set biKey = New InfInt
+  Set biMod = New InfInt
+  Set biSig = New InfInt
+  biKey.Init FlipBytes(bKey)
+  biMod.Init RSA_EXP
+  biSig.Init FlipBytes(bSig)
+  Set biRet = ModPowLib.ModPow(biSig, biMod, biKey)
+  VerifySignature = sMatch = biRet.ToString
+  Exit Function
+Erred:
+  VerifySignature = False
+End Function
+
+Private Function FlipBytes(bIn() As Byte) As Byte()
+Dim bOut() As Byte
+Dim I      As Long
+Dim L      As Long
+  L = UBound(bIn)
+  ReDim bOut(L)
+  For I = 0 To L
+    bOut(L - I) = bIn(I)
+  Next I
+  FlipBytes = bOut
+End Function
 
 Private Sub httpUpdate_DownloadErrored(sReason As String)
   tmrUpdate.Enabled = False
