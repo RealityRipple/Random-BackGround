@@ -62,7 +62,7 @@ Dim I As Long
   InitCommonControlsVB
 
   For I = 0 To 14
-      pow2I(I) = 2 ^ I
+    pow2I(I) = 2 ^ I
   Next I
   pow2I(15) = &H8000
 
