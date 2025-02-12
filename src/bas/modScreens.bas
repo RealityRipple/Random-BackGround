@@ -97,8 +97,31 @@ Dim mCnt    As Long
     End If
     dev = dev + 1
   Loop
+  SortByCoords Mons
   GetMonitors = Mons
 End Function
+
+Private Sub SortByCoords(ByRef Mons() As Monitor)
+Dim I      As Long
+Dim J      As Long
+Dim vSwap  As Monitor
+Dim iMax   As Long
+Const iMin As Long = 1
+  iMax = UBound(Mons)
+  I = iMin
+  J = I + 1
+  Do While I <= iMax
+    If Mons(I).Left < Mons(I - 1).Left Or (Mons(I).Left = Mons(I - 1).Left And Mons(I).Top < Mons(I - 1).Top) Then
+      vSwap = Mons(I)
+      Mons(I) = Mons(I - 1)
+      Mons(I - 1) = vSwap
+      If I > iMin Then I = I - 1
+    Else
+      I = J
+      J = J + 1
+    End If
+  Loop
+End Sub
 
 Public Function GetMonitorCount() As Integer
 Dim Mons() As Monitor
