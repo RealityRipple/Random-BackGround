@@ -98,6 +98,7 @@ Dim mCnt    As Long
     dev = dev + 1
   Loop
   SortByCoords Mons
+  If Not modZero.ZeroPrimary Then ReZeroCoords Mons
   GetMonitors = Mons
 End Function
 
@@ -121,6 +122,23 @@ Const iMin As Long = 1
       J = J + 1
     End If
   Loop
+End Sub
+
+Private Sub ReZeroCoords(ByRef Mons() As Monitor)
+Dim I     As Long
+Dim iTop  As Long
+Dim iLeft As Long
+  For I = 0 To UBound(Mons)
+    If iTop > Mons(I).Top Then iTop = Mons(I).Top
+    If iLeft > Mons(I).Left Then iLeft = Mons(I).Left
+  Next I
+  If iTop >= 0 And iLeft >= 0 Then Exit Sub
+  iTop = Abs(iTop)
+  iLeft = Abs(iLeft)
+  For I = 0 To UBound(Mons)
+    Mons(I).Top = Mons(I).Top + iTop
+    Mons(I).Left = Mons(I).Left + iLeft
+  Next I
 End Sub
 
 Public Function GetMonitorCount() As Integer

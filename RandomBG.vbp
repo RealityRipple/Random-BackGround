@@ -21,6 +21,7 @@ Module=modBase64; src\bas\modBase64.bas
 Class=clsModPow; src\cls\clsModPow.cls
 Module=modRSA; src\bas\modRSA.bas
 Class=InfInt; src\cls\InfInt.cls
+Module=modZero; src\bas\modZero.bas
 IconForm="frmAbout"
 Startup="Sub Main"
 HelpFile=""
