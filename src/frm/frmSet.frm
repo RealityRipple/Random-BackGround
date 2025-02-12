@@ -346,22 +346,26 @@ Erred:
 End Function
 
 Private Sub Form_Load()
+Dim bShow As Boolean
   On Error GoTo Erred
-  If LenB(Command$) = 0 Then
-    Randomize
+  Randomize
+  bShow = True
+  If LenB(Command$) > 0 Then
+    If Left$(Command$, 5) = "/set " Then
+      bShow = False
+    ElseIf Command$ = "/next" Then
+      bShow = False
+    End If
+  End If
+  If bShow Then
     Set TrayIcon.Icon = Me.Icon
     TrayIcon.ToolTipText = "Random BackGround"
     TrayIcon.ShowIcon
     If App.PrevInstance Then End
-    App.TaskVisible = False
-    Me.Hide
-    LoadSettings
-  Else
-    Randomize
-    App.TaskVisible = False
-    Me.Hide
-    LoadSettings
   End If
+  App.TaskVisible = False
+  Me.Hide
+  LoadSettings
   Exit Sub
 Erred:
   frmNotify.Notify "Error in Load: " & Err.Description
