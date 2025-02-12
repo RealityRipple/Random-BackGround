@@ -3,77 +3,84 @@ Object = "{F9043C88-F6F2-101A-A3C9-08002B2F49FB}#1.2#0"; "COMDLG32.OCX"
 Begin VB.Form frmSettings 
    BorderStyle     =   3  'Fixed Dialog
    Caption         =   "Random BackGround Settings"
-   ClientHeight    =   2655
+   ClientHeight    =   2640
    ClientLeft      =   45
    ClientTop       =   330
-   ClientWidth     =   6960
+   ClientWidth     =   7020
    Icon            =   "frmSettings.frx":0000
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   2655
-   ScaleWidth      =   6960
+   ScaleHeight     =   2640
+   ScaleWidth      =   7020
    ShowInTaskbar   =   0   'False
    StartUpPosition =   2  'CenterScreen
+   Begin VB.ComboBox cmbMultimonitor 
+      Height          =   315
+      ItemData        =   "frmSettings.frx":014A
+      Left            =   2760
+      List            =   "frmSettings.frx":0157
+      Style           =   2  'Dropdown List
+      TabIndex        =   11
+      ToolTipText     =   "Advanced multimonitor control."
+      Top             =   2220
+      Width           =   2055
+   End
+   Begin VB.Timer tmrProfChange 
+      Interval        =   1000
+      Left            =   60
+      Top             =   2640
+   End
    Begin VB.CheckBox chkSmooth 
       Caption         =   "Smooth &Transition"
       Height          =   255
       Left            =   2760
-      TabIndex        =   14
-      Top             =   2040
+      TabIndex        =   9
+      Top             =   1680
       Width           =   1575
    End
    Begin VB.CheckBox chkDesktopMenu 
       Caption         =   "Des&ktop Context Menu"
       Height          =   255
-      Left            =   4860
-      TabIndex        =   16
+      Left            =   4920
+      TabIndex        =   17
       ToolTipText     =   "Add a menu item in the Desktop context menu to show a new Random BackGround."
       Top             =   1680
       Width           =   1935
    End
    Begin VB.ComboBox cmbMaxScale 
       Height          =   315
-      ItemData        =   "frmSettings.frx":014A
-      Left            =   4860
-      List            =   "frmSettings.frx":0169
+      ItemData        =   "frmSettings.frx":0180
+      Left            =   4920
+      List            =   "frmSettings.frx":019F
       Style           =   2  'Dropdown List
-      TabIndex        =   9
+      TabIndex        =   13
       ToolTipText     =   "Maximum ratio to upscale images to fit or fill the screen."
       Top             =   300
       Width           =   2055
    End
-   Begin VB.CheckBox chkUnique 
-      Caption         =   "&Unique to Screen"
-      Height          =   255
-      Left            =   2760
-      TabIndex        =   13
-      ToolTipText     =   $"frmSettings.frx":019D
-      Top             =   1680
-      Width           =   1575
-   End
    Begin VB.CommandButton cmdBackground 
       BackColor       =   &H00000000&
       Height          =   255
-      Left            =   6300
+      Left            =   6360
       Style           =   1  'Graphical
-      TabIndex        =   11
+      TabIndex        =   15
       ToolTipText     =   "Color of empty background space. Particularly used by Fit and Center positioning."
       Top             =   900
       Width           =   555
    End
    Begin MSComDlg.CommonDialog cdlBGColor 
-      Left            =   4320
-      Top             =   2100
+      Left            =   540
+      Top             =   2640
       _ExtentX        =   847
       _ExtentY        =   847
       _Version        =   393216
    End
    Begin VB.ComboBox cmbPosition 
       Height          =   315
-      ItemData        =   "frmSettings.frx":0229
+      ItemData        =   "frmSettings.frx":01D3
       Left            =   2760
-      List            =   "frmSettings.frx":023C
+      List            =   "frmSettings.frx":01E6
       Style           =   2  'Dropdown List
       TabIndex        =   7
       ToolTipText     =   "Background positioning style."
@@ -82,9 +89,9 @@ Begin VB.Form frmSettings
    End
    Begin VB.ComboBox cmbTime 
       Height          =   315
-      ItemData        =   "frmSettings.frx":0262
+      ItemData        =   "frmSettings.frx":020C
       Left            =   2760
-      List            =   "frmSettings.frx":02C8
+      List            =   "frmSettings.frx":0272
       Style           =   2  'Dropdown List
       TabIndex        =   5
       ToolTipText     =   "Duration between background changes."
@@ -94,8 +101,8 @@ Begin VB.Form frmSettings
    Begin VB.CheckBox chkAssoc 
       Caption         =   "Assoctaite &with Images"
       Height          =   255
-      Left            =   4860
-      TabIndex        =   15
+      Left            =   4920
+      TabIndex        =   16
       ToolTipText     =   "Add a menu item to BMP, DIB, JPG, and GIF files in Windows Explorer to set the file as the current background image."
       Top             =   1320
       Width           =   1935
@@ -137,8 +144,8 @@ Begin VB.Form frmSettings
       Caption         =   "OK"
       Default         =   -1  'True
       Height          =   375
-      Left            =   4860
-      TabIndex        =   17
+      Left            =   4920
+      TabIndex        =   18
       ToolTipText     =   "Save settings."
       Top             =   2220
       Width           =   975
@@ -147,7 +154,7 @@ Begin VB.Form frmSettings
       Caption         =   "Run on &StartUp"
       Height          =   255
       Left            =   2760
-      TabIndex        =   12
+      TabIndex        =   8
       ToolTipText     =   "Run the program on system Startup for this user."
       Top             =   1320
       Width           =   1455
@@ -156,25 +163,33 @@ Begin VB.Form frmSettings
       Cancel          =   -1  'True
       Caption         =   "C&ancel"
       Height          =   375
-      Left            =   5940
-      TabIndex        =   18
+      Left            =   6000
+      TabIndex        =   19
       ToolTipText     =   "Close."
       Top             =   2220
       Width           =   975
    End
+   Begin VB.Label lblMultimonitor 
+      Caption         =   "M&ultimonitor:"
+      Height          =   255
+      Left            =   2760
+      TabIndex        =   10
+      Top             =   1980
+      Width           =   1995
+   End
    Begin VB.Label lblMaxScale 
       Caption         =   "&Maximum Scale:"
       Height          =   255
-      Left            =   4860
-      TabIndex        =   8
+      Left            =   4920
+      TabIndex        =   12
       Top             =   60
       Width           =   1995
    End
    Begin VB.Label lblBackground 
       Caption         =   "Background &Color:"
       Height          =   255
-      Left            =   4860
-      TabIndex        =   10
+      Left            =   4920
+      TabIndex        =   14
       Top             =   900
       Width           =   1395
    End
@@ -255,7 +270,7 @@ Dim I          As Integer
       frmSet.bPosition = IIf(cmbPosition.ListIndex < 0, bgPOSITION.Fit, cmbPosition.ListIndex)
       frmSet.bMaxScale = IIf(cmbMaxScale.ListIndex < 0, bgMAXSCALE.Unlimited, cmbMaxScale.ListIndex)
       frmSet.BGColor = cmdBackground.BackColor
-      frmSet.Unique = chkUnique.Value = 1
+      frmSet.Multimonitor = cmbMultimonitor.ItemData(cmbMultimonitor.ListIndex)
     Else
       WriteINI sWriteTo(I), "Directory", dirBG.Path, "config.ini"
       WriteINI sWriteTo(I), "Subdirectories", IIf(chkSubDir.Value = 1, "Y", "N"), "config.ini"
@@ -263,7 +278,7 @@ Dim I          As Integer
       WriteINI sWriteTo(I), "Position", IIf(cmbPosition.ListIndex < 0, Trim$(Str$(bgPOSITION.Fit)), Trim$(Str$(cmbPosition.ListIndex))), "config.ini"
       WriteINI sWriteTo(I), "MaxScale", IIf(cmbMaxScale.ListIndex < 0, Trim$(Str$(bgMAXSCALE.Unlimited)), Trim$(Str$(cmbMaxScale.ListIndex))), "config.ini"
       WriteINI sWriteTo(I), "Color", Trim$(Str$(cmdBackground.BackColor)), "config.ini"
-      WriteINI sWriteTo(I), "Unique", IIf(chkUnique.Value = 1, "Y", "N"), "config.ini"
+      WriteINI sWriteTo(I), "Multimonitor", cmbMultimonitor.ItemData(cmbMultimonitor.ListIndex), "config.ini"
     End If
   Next I
   frmSet.tmrNewBG.Enabled = Not frmSet.mnuPause.Checked
@@ -321,7 +336,8 @@ Dim sPosition As String
 Dim lMaxScale As Long
 Dim sMaxScale As String
 Dim sBGColor  As String
-Dim sUnique   As String
+Dim sMultimon As String
+Dim bMultimon As Boolean
 Dim I         As Integer
   sProfile = GetDisplayProfile
 
@@ -380,13 +396,28 @@ Dim I         As Integer
   End If
 
   If GetMonitorCount < 2 Then
-    chkUnique.Enabled = False
-    chkUnique.Value = 0
+    lblMultimonitor.Enabled = False
+    cmbMultimonitor.Enabled = False
+    cmbMultimonitor.ListIndex = 0
   Else
-    chkUnique.Enabled = True
-    sUnique = ReadINI(sProfile, "Unique", "config.ini", "UNSET")
-    If sUnique = "UNSET" Then sUnique = ReadINI("Settings", "Unique", "config.ini", "Y")
-    chkUnique.Value = IIf(sUnique = "Y", 1, 0)
+    lblMultimonitor.Enabled = True
+    cmbMultimonitor.Enabled = True
+    sMultimon = ReadINI("Settings", "Unique", "config.ini", "UNSET")
+    If sMultimon <> "UNSET" Then
+      WriteINI "Settings", "Unique", vbNullString, "config.ini"
+      WriteINI "Settings", "Multimonitor", IIf(sMultimon = "N", "0", "1"), "config.ini"
+    End If
+    sMultimon = ReadINI(sProfile, "Multimonitor", "config.ini", "UNSET")
+    If sMultimon = "UNSET" Then sMultimon = ReadINI("Settings", "Multimonitor", "config.ini", "1")
+    bMultimon = False
+    For I = 0 To cmbMultimonitor.ListCount - 1
+      If cmbMultimonitor.ItemData(I) = Val(sMultimon) Then
+        cmbMultimonitor.ListIndex = I
+        bMultimon = True
+        Exit For
+      End If
+    Next I
+    If Not bMultimon Then cmbMultimonitor.ListIndex = 0
   End If
 End Sub
 

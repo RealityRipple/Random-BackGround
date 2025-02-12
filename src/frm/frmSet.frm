@@ -97,14 +97,14 @@ Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As Long) As L
 Private Declare Function DeleteDC Lib "gdi32" (ByVal hDC As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As Long, ByVal hObject As Long) As Long
-Public FileDir    As String
-Public lInterval  As Long
-Public bPosition  As bgPOSITION
-Public bMaxScale  As bgMAXSCALE
-Public BGColor    As Long
-Public Unique     As Boolean
-Public Subdirs    As Boolean
-Private LastTick  As Long
+Public FileDir      As String
+Public lInterval    As Long
+Public bPosition    As bgPOSITION
+Public bMaxScale    As bgMAXSCALE
+Public BGColor      As Long
+Public Multimonitor As Long
+Public Subdirs      As Boolean
+Private LastTick    As Long
 
 Private Function CreateImage(ByVal FromFile As String, ByVal Width As Long, ByVal Height As Long) As IPictureDisp
 Dim bGD As Boolean
@@ -304,6 +304,34 @@ Erred:
   Set CompoundImages = Nothing
 End Function
 
+Private Function SplitImage(ByRef Image As IPictureDisp, ByRef Mons() As Monitor) As IPictureDisp()
+Dim I     As Integer
+Dim mDC   As Long
+Dim lLeft As Long, lTop  As Long
+Dim trueX As Long, trueY As Long
+Dim ret() As IPictureDisp
+  ReDim ret(UBound(Mons))
+  For I = 0 To UBound(Mons)
+    If lLeft > Mons(I).Left Then lLeft = Mons(I).Left
+    If lTop > Mons(I).Top Then lTop = Mons(I).Top
+  Next I
+  For I = 0 To UBound(Mons)
+    pctImage.Cls
+    trueX = Abs(lLeft) + Mons(I).Left
+    trueY = Abs(lTop) + Mons(I).Top
+    pctImage.Width = Mons(I).Width * Screen.TwipsPerPixelX
+    pctImage.Height = Mons(I).Height * Screen.TwipsPerPixelY
+    pctImage.BackColor = BGColor
+    mDC = CreateCompatibleDC(pctImage.hDC)
+    SetStretchBltMode pctImage.hDC, 4
+    DeleteObject SelectObject(mDC, Image.Handle)
+    StretchBlt pctImage.hDC, 0, 0, Mons(I).Width, Mons(I).Height, mDC, trueX, trueY, Mons(I).Width, Mons(I).Height, vbSrcCopy
+    DeleteDC mDC
+    Set ret(I) = pctImage.Image
+  Next I
+  SplitImage = ret
+End Function
+
 Private Function FindFiles(ByVal Path As String, Optional ByVal Monitor As Integer = 0) As String
 Dim I       As Integer
 Dim BGs()   As String
@@ -380,7 +408,8 @@ Dim lPosition As Long
 Dim sPosition As String
 Dim lMaxScale As Long
 Dim sMaxScale As String
-Dim sUnique   As String
+Dim lMultimon As Long
+Dim sMultimon As String
   On Error GoTo Erred
   sProfile = GetDisplayProfile
 
@@ -433,9 +462,23 @@ Dim sUnique   As String
     bMaxScale = bgMAXSCALE.Unlimited
   End If
 
-  sUnique = ReadINI(sProfile, "Unique", "config.ini", "UNSET")
-  If sUnique = "UNSET" Then sUnique = ReadINI("Settings", "Unique", "config.ini", "Y")
-  Unique = sUnique = "Y"
+  sMultimon = ReadINI("Settings", "Unique", "config.ini", "UNSET")
+  If sMultimon <> "UNSET" Then
+    WriteINI "Settings", "Unique", vbNullString, "config.ini"
+    WriteINI "Settings", "Multimonitor", IIf(sMultimon = "N", "0", "1"), "config.ini"
+  End If
+  sMultimon = ReadINI(sProfile, "Multimonitor", "config.ini", "UNSET")
+  If sMultimon = "UNSET" Then sMultimon = ReadINI("Settings", "Multimonitor", "config.ini", "1")
+  If IsNumeric(sMultimon) Then
+    lMultimon = Val(sMultimon)
+    If lMultimon >= 0 And lMultimon <= 2 Then
+      Multimonitor = lMultimon
+    Else
+      Multimonitor = 1
+    End If
+  Else
+    Multimonitor = 1
+  End If
 
   If FileDir = "%APP%" Then FileDir = App.Path
   Do While Right$(FileDir, 1) = "\" Or Right$(FileDir, 1) = "/"
@@ -450,7 +493,7 @@ Erred:
   lInterval = 180
   bPosition = bgPOSITION.Fit
   bMaxScale = bgMAXSCALE.Unlimited
-  Unique = True
+  Multimonitor = 1
 End Sub
 
 Private Sub LoadSettings()
@@ -547,13 +590,17 @@ Public Sub mnuNewBG_Click()
 End Sub
 
 Public Sub NewBackground(Optional ByVal SetBackground As String = vbNullString)
-Dim Mons()  As Monitor
-Dim iImg    As IPictureDisp
-Dim BG      As String
-Dim I       As Long
-Dim lWidth  As Long
-Dim lHeight As Long
-Dim lMons As Long
+Dim Mons()   As Monitor
+Dim Images() As IPictureDisp
+Dim BG       As String
+Dim I        As Long
+Dim lL       As Long
+Dim lT       As Long
+Dim lR       As Long
+Dim lB       As Long
+Dim lWidth   As Long
+Dim lHeight  As Long
+Dim lMons    As Long
   On Error Resume Next
   If LastTick > GetTickCount - 2000 Then Exit Sub
   LastTick = GetTickCount
@@ -601,18 +648,43 @@ Dim lMons As Long
     Else
       tmrNewBG.Enabled = False
     End If
+  ElseIf Multimonitor = 2 Then
+    lL = 0
+    lT = 0
+    lR = 0
+    lB = 0
+    For I = 0 To lMons - 1
+      If Mons(I).Left < lL Then lL = Mons(I).Left
+      If Mons(I).Top < lT Then lT = Mons(I).Top
+      If Mons(I).Top + Mons(I).Height > lB Then lB = Mons(I).Top + Mons(I).Height
+      If Mons(I).Left + Mons(I).Width > lR Then lR = Mons(I).Left + Mons(I).Width
+    Next I
+    lWidth = lR - lL
+    lHeight = lB - lT
+    If LenB(SetBackground) > 0 Then
+      BG = SetBackground
+    Else
+      BG = FindFiles(FileDir)
+    End If
+    If LenB(BG) > 0 Then
+      Images = SplitImage(CreateImage(BG, lWidth, lHeight), Mons)
+      SavePicture CompoundImages(Images, Mons), SettingsFolder & "\RandomBG.bmp"
+      SetBG
+      LastTick = GetTickCount
+    Else
+      tmrNewBG.Enabled = False
+    End If
   Else
-    Dim Images() As IPictureDisp
     ReDim Images(lMons - 1)
     If LenB(SetBackground) > 0 Then
       BG = SetBackground
     Else
-      If Not Unique Then BG = FindFiles(FileDir, I)
+      If Multimonitor = 0 Then BG = FindFiles(FileDir, I)
     End If
     For I = 0 To lMons - 1
       lWidth = Mons(I).Width
       lHeight = Mons(I).Height
-      If LenB(SetBackground) = 0 And Unique Then BG = FindFiles(FileDir, I)
+      If LenB(SetBackground) = 0 And Multimonitor = 1 Then BG = FindFiles(FileDir, I)
       If LenB(BG) > 0 Then
         Set Images(I) = CreateImage(BG, lWidth, lHeight)
       Else
