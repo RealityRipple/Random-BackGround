@@ -551,7 +551,7 @@ Dim I        As Integer
         sDirs(lDir) = sPath & fName
         lDir = lDir + 1
       Else
-        Select Case Mid$(fName, InStrRev(fName, ".") + 1)
+        Select Case LCase$(Mid$(fName, InStrRev(fName, ".") + 1))
           Case "bmp", "dib", "jpg", "jpeg", "jpe", "gif", "png"
             ReDim Preserve sFiles(lFile)
             sFiles(lFile) = sPath & fName
