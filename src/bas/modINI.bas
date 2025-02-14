@@ -6,7 +6,7 @@ Private Declare Function SHGetPathFromIDList Lib "shell32" (pidl As Long, ByVal 
 Private Declare Sub CoTaskMemFree Lib "ole32" (ByVal pv As Long)
 Public Sub WriteINI(wiSection As String, wiKey As String, wiValue As String, wiFile As String)
 Dim INIFile As String
-  If LenB(Dir$(wiFile)) = 0 Then
+  If CheckPath(wiFile) <> 1 Then
     INIFile = SettingsFolder & "\" & wiFile
   Else
     INIFile = wiFile
@@ -18,12 +18,12 @@ Dim sRiBuffer As String
 Dim sRiValue  As String
 Dim sRiLong   As String
 Dim INIFile   As String
-  If LenB(Dir$(riFile)) = 0 Then
+  If CheckPath(riFile) <> 1 Then
     INIFile = SettingsFolder & "\" & riFile
   Else
     INIFile = riFile
   End If
-  If Dir(INIFile) <> "" Then
+  If CheckPath(INIFile) = 1 Then
     sRiBuffer = String(255, vbNull)
     sRiLong = GetPrivateProfileString(riSection, riKey, Chr$(1), sRiBuffer, 255, INIFile)
     If Left$(sRiBuffer, 1) <> Chr$(1) Then
@@ -52,8 +52,8 @@ Dim pidl        As Long
       SettingsFolder = App.Path
     Else
       SettingsFolder = Left$(strLocation, InStr(strLocation, vbNullChar) - 1) & "\RealityRipple Software\Random BackGround"
-      If LenB(Dir$(Left$(strLocation, InStr(strLocation, vbNullChar) - 1) & "\RealityRipple Software\", vbDirectory Or vbHidden Or vbReadOnly Or vbSystem)) = 0 Then MkDir Left$(strLocation, InStr(strLocation, vbNullChar) - 1) & "\RealityRipple Software\"
-      If LenB(Dir$(SettingsFolder, vbDirectory Or vbHidden Or vbReadOnly Or vbSystem)) = 0 Then MkDir SettingsFolder
+      If CheckPath(Left$(strLocation, InStr(strLocation, vbNullChar) - 1) & "\RealityRipple Software\") <> 2 Then MkDir Left$(strLocation, InStr(strLocation, vbNullChar) - 1) & "\RealityRipple Software\"
+      If CheckPath(SettingsFolder)) <> 2 Then MkDir SettingsFolder
     End If
     CoTaskMemFree pidl
   End If

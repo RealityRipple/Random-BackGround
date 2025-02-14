@@ -45,17 +45,3 @@ Dim DirLen As Long
   IsTenPlus = False
 End Function
 
-Private Function CheckPath(ByVal path As String) As Byte
-Dim R As VbFileAttribute
-  On Error GoTo Erred
-  R = GetAttr(path)
-  If (R And vbDirectory) = vbDirectory Then
-    CheckPath = 2
-  Else
-    CheckPath = 1
-  End If
-  Exit Function
-Erred:
-  CheckPath = 0
-End Function
-

@@ -344,7 +344,11 @@ Dim I         As Integer
   sDefDir = PicturesFolder
   sBGDir = ReadINI(sProfile, "Directory", "config.ini", "UNSET")
   If sBGDir = "UNSET" Then sBGDir = ReadINI("Settings", "Directory", "config.ini", sDefDir & "\")
-  If LenB(Dir$(sBGDir, vbDirectory)) = 0 Or LenB(sBGDir) = 0 Then sBGDir = sDefDir & "\"
+  If LenB(sBGDir) = 0 Then
+    sBGDir = sDefDir & "\"
+  ElseIf CheckPath(sBGDir) <> 2 Then
+    sBGDir = sDefDir & "\"
+  End If
   dirBG.Path = sBGDir
   drvBG.Drive = Left$(sBGDir, 3)
 

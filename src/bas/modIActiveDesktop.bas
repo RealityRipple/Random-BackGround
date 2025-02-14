@@ -51,7 +51,7 @@ Private Sub ModifyTheme()
 Dim CustomThemePath As String
   CustomThemePath = ThemesPath
   If LenB(CustomThemePath) = 0 Then Exit Sub
-  If LenB(Dir$(CustomThemePath)) = 0 Then Exit Sub
+  If CheckPath(CustomThemePath) <> 1 Then Exit Sub
   'WriteINI "Slideshow", "ImagesRootPIDL", "", CustomThemePath
   'WriteINI "Slideshow", "Interval", "86400000", CustomThemePath
   WriteINI "Slideshow", "Shuffle", "1", CustomThemePath

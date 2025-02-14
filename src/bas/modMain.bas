@@ -131,6 +131,24 @@ Dim OldStyle As Boolean
   If OldStyle Then SystemParametersInfoA 20, 0&, SettingsFolder & "\RandomBG" & AltVal & ".bmp", &H1 Or &H2
 End Sub
 
+Public Function CheckPath(ByVal Path As String) As Byte
+Dim r As VbFileAttribute
+  On Error GoTo Erred
+  If LenB(Dir$(Path, vbDirectory Or vbHidden Or vbReadOnly Or vbSystem)) = 0 Then
+    CheckPath = 0
+    Exit Function
+  End If
+  r = GetAttr(Path)
+  If (r And vbDirectory) = vbDirectory Then
+    CheckPath = 2
+  Else
+    CheckPath = 1
+  End If
+  Exit Function
+Erred:
+  CheckPath = 0
+End Function
+
 Private Sub SetWallpaperStyle(ByVal Style As Integer)
   Select Case Style
     Case 0

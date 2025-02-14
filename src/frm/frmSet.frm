@@ -616,12 +616,12 @@ Dim lMons    As Long
       BG = FindFiles(FileDir)
     End If
     If LenB(BG) > 0 Then
-      If LenB(Dir$(SettingsFolder & "\RandomBG2.bmp")) Then
-        If LenB(Dir$(SettingsFolder & "\RandomBG.bmp")) Then Kill SettingsFolder & "\RandomBG.bmp"
+      If CheckPath(SettingsFolder & "\RandomBG2.bmp") = 1 Then
+        If CheckPath(SettingsFolder & "\RandomBG.bmp") = 1 Then Kill SettingsFolder & "\RandomBG.bmp"
         SavePicture CreateImage(BG, lWidth, lHeight), SettingsFolder & "\RandomBG.bmp"
         SetBG
         Kill SettingsFolder & "\RandomBG.bmp"
-      ElseIf LenB(Dir$(SettingsFolder & "\RandomBG.bmp")) Then
+      ElseIf CheckPath(SettingsFolder & "\RandomBG.bmp") = 1 Then
         SavePicture CreateImage(BG, lWidth, lHeight), SettingsFolder & "\RandomBG2.bmp"
         SetBG "2"
         Kill SettingsFolder & "\RandomBG2.bmp"
@@ -692,12 +692,12 @@ Dim lMons    As Long
         Exit Sub
       End If
     Next I
-    If LenB(Dir$(SettingsFolder & "\RandomBG2.bmp")) Then
-      If LenB(Dir$(SettingsFolder & "\RandomBG.bmp")) Then Kill SettingsFolder & "\RandomBG.bmp"
+    If CheckPath(SettingsFolder & "\RandomBG2.bmp") = 1 Then
+      If CheckPath(SettingsFolder & "\RandomBG.bmp") = 1 Then Kill SettingsFolder & "\RandomBG.bmp"
       SavePicture CompoundImages(Images, Mons), SettingsFolder & "\RandomBG.bmp"
       SetBG
       Kill SettingsFolder & "\RandomBG2.bmp"
-    ElseIf LenB(Dir$(SettingsFolder & "\RandomBG.bmp")) Then
+    ElseIf CheckPath(SettingsFolder & "\RandomBG.bmp") = 1 Then
       SavePicture CompoundImages(Images, Mons), SettingsFolder & "\RandomBG2.bmp"
       SetBG "2"
       Kill SettingsFolder & "\RandomBG.bmp"
