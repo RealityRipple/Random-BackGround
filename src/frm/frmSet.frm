@@ -1,5 +1,6 @@
 VERSION 5.00
 Object = "{8AB4F8F4-773A-4D7E-8DE6-3E5FD03E18CF}#1.0#0"; "RRTrayIcon.ocx"
+Object = "{F9043C88-F6F2-101A-A3C9-08002B2F49FB}#1.2#0"; "COMDLG32.OCX"
 Begin VB.Form frmSet 
    BorderStyle     =   4  'Fixed ToolWindow
    Caption         =   "Loading..."
@@ -16,30 +17,43 @@ Begin VB.Form frmSet
    ScaleWidth      =   1335
    ShowInTaskbar   =   0   'False
    StartUpPosition =   2  'CenterScreen
+   Begin MSComDlg.CommonDialog cdlDummy 
+      Left            =   600
+      Top             =   840
+      _ExtentX        =   847
+      _ExtentY        =   847
+      _Version        =   393216
+   End
    Begin VB.PictureBox pctImage 
       AutoRedraw      =   -1  'True
       BackColor       =   &H00FFFFFF&
       BorderStyle     =   0  'None
       ForeColor       =   &H00FFFFFF&
       Height          =   255
-      Left            =   0
+      Left            =   1080
       ScaleHeight     =   17
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   17
       TabIndex        =   1
-      Top             =   0
+      Top             =   240
       Width           =   255
    End
    Begin TrayIconOCX.TrayIcon TrayIcon 
       Left            =   0
-      Top             =   0
+      Top             =   240
       _ExtentX        =   1005
       _ExtentY        =   1005
    End
    Begin VB.Timer tmrNewBG 
       Interval        =   1000
-      Left            =   120
-      Top             =   0
+      Left            =   600
+      Top             =   240
+   End
+   Begin RBG.HTTP httpDummy 
+      Left            =   0
+      Top             =   840
+      _ExtentX        =   1005
+      _ExtentY        =   1005
    End
    Begin VB.Label lblWait 
       Alignment       =   2  'Center
