@@ -56,8 +56,8 @@ Private Type MONITORINFO
   rcWork              As RECT
   dwFlags             As Long
 End Type
-Private Declare Function EnumDisplayDevices Lib "user32" Alias "EnumDisplayDevicesA" (ByVal lpDevice As String, ByVal iDevNum As Long, lpDisplayDevice As DISPLAY_DEVICE, dwFlags As Long) As Long
-Private Declare Function EnumDisplaySettingsEx Lib "user32" Alias "EnumDisplaySettingsExA" (ByVal lpszDeviceName As String, ByVal iModeNum As Long, lpDevMode As DEVMODE, dwFlags As Long) As Long
+Private Declare Function EnumDisplayDevices Lib "user32" Alias "EnumDisplayDevicesA" (ByVal lpDevice As String, ByVal iDevNum As Long, lpDisplayDevice As DISPLAY_DEVICE, ByVal dwFlags As Long) As Long
+Private Declare Function EnumDisplaySettingsEx Lib "user32" Alias "EnumDisplaySettingsExA" (ByVal lpszDeviceName As String, ByVal iModeNum As Long, lpDevMode As DEVMODE, ByVal dwFlags As Long) As Long
 Private Declare Function MonitorFromPoint Lib "user32" (ByVal ptY As Long, ByVal ptX As Long, ByVal dwFlags As Long) As Long
 Private Declare Function GetMonitorInfo Lib "user32" Alias "GetMonitorInfoA" (ByVal hMonitor As Long, lpmi As MONITORINFO) As Long
 
