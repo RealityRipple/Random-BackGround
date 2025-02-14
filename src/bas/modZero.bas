@@ -3,6 +3,7 @@ Option Explicit
 Private Declare Function GetWindowsDirectoryA Lib "kernel32" (ByVal lpBuffer As String, ByVal nSize As Long) As Long
 
 Public Function ZeroPrimary() As Boolean
+  On Error GoTo Erred
   If LenB(Command$) > 0 Then
     If Command$ = "/0" Then
       ZeroPrimary = False
@@ -13,12 +14,14 @@ Public Function ZeroPrimary() As Boolean
     ZeroPrimary = False
     Exit Function
   End If
+Erred:
   ZeroPrimary = True
 End Function
 
 Private Function IsTenPlus() As Boolean
 Dim WinDir As String
 Dim DirLen As Long
+  On Error GoTo Erred
   WinDir = Space$(&HFF)
   DirLen = GetWindowsDirectoryA(WinDir, &HFF)
   If DirLen < 1 Then
@@ -42,6 +45,7 @@ Dim DirLen As Long
     IsTenPlus = True
     Exit Function
   End If
+Erred:
   IsTenPlus = False
 End Function
 
