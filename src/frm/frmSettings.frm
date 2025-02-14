@@ -218,6 +218,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub cmbPosition_Click()
+  On Error GoTo Erred
   Select Case cmbPosition.ListIndex
     Case 0, 1
       lblMaxScale.Enabled = True
@@ -226,6 +227,10 @@ Private Sub cmbPosition_Click()
       lblMaxScale.Enabled = False
       cmbMaxScale.Enabled = False
   End Select
+  Exit Sub
+Erred:
+  lblMaxScale.Enabled = False
+  cmbMaxScale.Enabled = False
 End Sub
 
 Private Sub cmdBackground_Click()
