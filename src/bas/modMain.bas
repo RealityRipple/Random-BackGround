@@ -45,16 +45,16 @@ Private Type OSVERSIONINFOEX
 End Type
 
 Public Function InitCommonControlsVB() As Boolean
-   On Error Resume Next
-   Dim iccex As tagInitCommonControlsEx
-   ' Ensure CC available:
-   With iccex
-       .lngSize = LenB(iccex)
-       .lngICC = ICC_USEREX_CLASSES
-   End With
-   InitCommonControlsEx iccex
-   InitCommonControlsVB = (Err.Number = 0)
-   On Error GoTo 0
+  On Error Resume Next
+  Dim iccex As tagInitCommonControlsEx
+  ' Ensure CC available:
+  With iccex
+    .lngSize = LenB(iccex)
+    .lngICC = ICC_USEREX_CLASSES
+  End With
+  InitCommonControlsEx iccex
+  InitCommonControlsVB = (Err.Number = 0)
+  On Error GoTo 0
 End Function
 
 Public Sub Main()
@@ -185,7 +185,6 @@ Private Sub SetWallpaperStyle(ByVal Style As Integer)
 Erred:
   frmNotify.Notify "Error in SetWallpaperStyle: " & Err.Description
 End Sub
-
 
 Private Function GetOSInfo(ByRef VerInfo As OSVERSIONINFOEX) As Boolean
 Dim udtVerinfo  As OSVERSIONINFOEX
