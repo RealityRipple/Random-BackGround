@@ -315,11 +315,16 @@ Private Function FlipBytes(bIn() As Byte) As Byte()
 Dim bOut() As Byte
 Dim I      As Long
 Dim L      As Long
+  On Error GoTo Erred
   L = UBound(bIn)
   ReDim bOut(L)
   For I = 0 To L
     bOut(L - I) = bIn(I)
   Next I
+  FlipBytes = bOut
+  Exit Function
+Erred:
+  Erase bOut
   FlipBytes = bOut
 End Function
 
