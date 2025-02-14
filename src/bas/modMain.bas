@@ -126,6 +126,27 @@ Erred:
   CanSmooth = False
 End Function
 
+Public Function HasMultimon() As Boolean
+Dim osInfo As OSVERSIONINFOEX
+  On Error GoTo Erred
+  If Not GetOSInfo(osInfo) Then
+    HasMultimon = False
+    Exit Function
+  End If
+  If osInfo.dwPlatformID > 1 Then
+    HasMultimon = True
+    Exit Function
+  End If
+  If osInfo.dwMajorVersion > 4 Then
+    HasMultimon = True
+    Exit Function
+  End If
+  HasMultimon = osInfo.dwMinorVersion > 0
+  Exit Function
+Erred:
+  HasMultimon = False
+End Function
+
 Public Sub SetBG(Optional ByVal AltVal As String = "")
 Dim OldStyle As Boolean
   On Error GoTo Erred

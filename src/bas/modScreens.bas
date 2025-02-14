@@ -72,6 +72,7 @@ Dim mi      As MONITORINFO
 Dim Mons()  As Monitor
 Dim mCnt    As Long
   On Error GoTo Plain
+  If Not HasMultimon Then GoTo Plain
   dd.cb = Len(dd)
   dev = 0
   Do While EnumDisplayDevices(vbNullString, dev, dd, 0) <> 0
