@@ -61,6 +61,7 @@ Public Sub Main()
 Dim I As Long
   InitCommonControlsVB
 
+  On Error GoTo Erred
   For I = 0 To 14
     pow2I(I) = 2 ^ I
   Next I
@@ -81,19 +82,27 @@ Dim I As Long
   End If
   Load frmSet
   frmSet.Hide
+  Exit Sub
+Erred:
+  frmNotify.Notify "Error in Startup: " & Err.Description
 End Sub
 
 Public Function HasSysAssoc() As Boolean
 Dim osInfo As OSVERSIONINFOEX
+  On Error GoTo Erred
   If Not GetOSInfo(osInfo) Then
     HasSysAssoc = False
     Exit Function
   End If
   HasSysAssoc = Not osInfo.dwMajorVersion < 6
+  Exit Function
+Erred:
+  HasSysAssoc = False
 End Function
 
 Public Function CanSmooth() As Boolean
 Dim osInfo As OSVERSIONINFOEX
+  On Error GoTo Erred
   If Not GetOSInfo(osInfo) Then
     CanSmooth = False
     Exit Function
@@ -112,10 +121,14 @@ Dim osInfo As OSVERSIONINFOEX
   If hWndow = 0 Then Exit Function
   Dim result As Long
   SendMessageTimeoutA hWndow, &H52C, 0, 0, 0, 500, result
+  Exit Function
+Erred:
+  CanSmooth = False
 End Function
 
 Public Sub SetBG(Optional ByVal AltVal As String = "")
 Dim OldStyle As Boolean
+  On Error GoTo Erred
   SetWallpaperStyle 1
   If ReadINI("Settings", "Smooth", "config.ini", "N") <> "Y" Then
     OldStyle = True
@@ -129,6 +142,9 @@ Dim OldStyle As Boolean
     End If
   End If
   If OldStyle Then SystemParametersInfoA 20, 0&, SettingsFolder & "\RandomBG" & AltVal & ".bmp", &H1 Or &H2
+  Exit Sub
+Erred:
+  frmNotify.Notify "Error in SetBG: " & Err.Description
 End Sub
 
 Public Function CheckPath(ByVal Path As String) As Byte
@@ -150,6 +166,7 @@ Erred:
 End Function
 
 Private Sub SetWallpaperStyle(ByVal Style As Integer)
+  On Error GoTo Erred
   Select Case Style
     Case 0
       regCreate_Value_SZ HKEY_CURRENT_USER, "Control Panel\Desktop", "TileWallpaper", "0 "
@@ -164,12 +181,16 @@ Private Sub SetWallpaperStyle(ByVal Style As Integer)
       regCreate_Value_SZ HKEY_CURRENT_USER, "Control Panel\Desktop", "TileWallpaper", "0 "
       regCreate_Value_SZ HKEY_CURRENT_USER, "Control Panel\Desktop", "WallpaperStyle", "0 "
   End Select
+  Exit Sub
+Erred:
+  frmNotify.Notify "Error in SetWallpaperStyle: " & Err.Description
 End Sub
 
 
 Private Function GetOSInfo(ByRef VerInfo As OSVERSIONINFOEX) As Boolean
 Dim udtVerinfo  As OSVERSIONINFOEX
 Dim strInfo     As String
+  On Error GoTo Erred
   udtVerinfo.szCSDVersion = Space$(128)
   udtVerinfo.dwOSVersionInfoSize = Len(udtVerinfo)
   If GetVersionExA(udtVerinfo) Then
@@ -186,5 +207,8 @@ Dim strInfo     As String
   Else
     GetOSInfo = False
   End If
+  Exit Function
+Erred:
+  GetOSInfo = False
 End Function
 
