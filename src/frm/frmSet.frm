@@ -413,31 +413,31 @@ Dim sMultimon As String
   On Error GoTo Erred
   sProfile = GetDisplayProfile
 
-  sColor = ReadINI(sProfile, "Color", "config.ini", "UNSET")
-  If sColor = "UNSET" Then sColor = ReadINI("Settings", "Color", "config.ini", "0")
+  sColor = ReadINI(sProfile, "Color", "UNSET")
+  If sColor = "UNSET" Then sColor = ReadINI("Settings", "Color", "0")
   If IsNumeric(sColor) Then
     BGColor = Val(sColor)
   Else
     BGColor = 0
   End If
 
-  FileDir = ReadINI(sProfile, "Directory", "config.ini", "UNSET")
-  If FileDir = "UNSET" Then FileDir = ReadINI("Settings", "Directory", "config.ini", "%APP%")
+  FileDir = ReadINI(sProfile, "Directory", "UNSET")
+  If FileDir = "UNSET" Then FileDir = ReadINI("Settings", "Directory", "%APP%")
 
-  sSubdirs = ReadINI(sProfile, "Subdirectories", "config.ini", "UNSET")
-  If sSubdirs = "UNSET" Then sSubdirs = ReadINI("Settings", "Subdirectories", "config.ini", "N")
+  sSubdirs = ReadINI(sProfile, "Subdirectories", "UNSET")
+  If sSubdirs = "UNSET" Then sSubdirs = ReadINI("Settings", "Subdirectories", "N")
   Subdirs = sSubdirs = "Y"
 
-  sInterval = ReadINI(sProfile, "Interval", "config.ini", "UNSET")
-  If sInterval = "UNSET" Then sInterval = ReadINI("Settings", "Interval", "config.ini", "180")
+  sInterval = ReadINI(sProfile, "Interval", "UNSET")
+  If sInterval = "UNSET" Then sInterval = ReadINI("Settings", "Interval", "180")
   If IsNumeric(sInterval) Then
     lInterval = Val(sInterval)
   Else
     lInterval = 180
   End If
 
-  sPosition = ReadINI(sProfile, "Position", "config.ini", "UNSET")
-  If sPosition = "UNSET" Then sPosition = ReadINI("Settings", "Position", "config.ini", "1")
+  sPosition = ReadINI(sProfile, "Position", "UNSET")
+  If sPosition = "UNSET" Then sPosition = ReadINI("Settings", "Position", "1")
   If IsNumeric(sPosition) Then
     lPosition = Val(sPosition)
     If lPosition >= 0 And lPosition <= 5 Then
@@ -449,8 +449,8 @@ Dim sMultimon As String
     bPosition = bgPOSITION.Fit
   End If
 
-  sMaxScale = ReadINI(sProfile, "MaxScale", "config.ini", "UNSET")
-  If sMaxScale = "UNSET" Then sMaxScale = ReadINI("Settings", "MaxScale", "config.ini", "0")
+  sMaxScale = ReadINI(sProfile, "MaxScale", "UNSET")
+  If sMaxScale = "UNSET" Then sMaxScale = ReadINI("Settings", "MaxScale", "0")
   If IsNumeric(sMaxScale) Then
     lMaxScale = Val(sMaxScale)
     If lMaxScale >= 0 And lMaxScale <= 9 Then
@@ -462,13 +462,13 @@ Dim sMultimon As String
     bMaxScale = bgMAXSCALE.Unlimited
   End If
 
-  sMultimon = ReadINI("Settings", "Unique", "config.ini", "UNSET")
+  sMultimon = ReadINI("Settings", "Unique", "UNSET")
   If sMultimon <> "UNSET" Then
-    WriteINI "Settings", "Unique", vbNullString, "config.ini"
-    WriteINI "Settings", "Multimonitor", IIf(sMultimon = "N", "0", "1"), "config.ini"
+    WriteINI "Settings", "Unique", vbNullString
+    WriteINI "Settings", "Multimonitor", IIf(sMultimon = "N", "0", "1")
   End If
-  sMultimon = ReadINI(sProfile, "Multimonitor", "config.ini", "UNSET")
-  If sMultimon = "UNSET" Then sMultimon = ReadINI("Settings", "Multimonitor", "config.ini", "1")
+  sMultimon = ReadINI(sProfile, "Multimonitor", "UNSET")
+  If sMultimon = "UNSET" Then sMultimon = ReadINI("Settings", "Multimonitor", "1")
   If IsNumeric(sMultimon) Then
     lMultimon = Val(sMultimon)
     If lMultimon >= 0 And lMultimon <= 2 Then
@@ -499,17 +499,17 @@ End Sub
 Private Sub LoadSettings()
   On Error GoTo Erred
   LoadProfile
-  If ReadINI("Settings", "Assoc", "config.ini", "N") = "Y" Then
+  If ReadINI("Settings", "Assoc", "N") = "Y" Then
     SetAssoc
   Else
     RemAssoc
   End If
-  If ReadINI("Settings", "DesktopMenu", "config.ini", "N") = "Y" Then
+  If ReadINI("Settings", "DesktopMenu", "N") = "Y" Then
     SetDesktopMenu
   Else
     RemDesktopMenu
   End If
-  If ReadINI("Settings", "Boot", "config.ini", "Y") = "Y" Then
+  If ReadINI("Settings", "Boot", "Y") = "Y" Then
     regCreate_A_Key HKEY_CURRENT_USER, "SOFTWARE\Microsoft\Windows\CurrentVersion\Run"
     regCreate_Value_SZ HKEY_CURRENT_USER, "SOFTWARE\Microsoft\Windows\CurrentVersion\Run", "RBG", App.Path & "\" & App.EXEName & ".exe"
   Else

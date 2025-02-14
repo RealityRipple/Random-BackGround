@@ -130,7 +130,7 @@ Public Sub SetBG(Optional ByVal AltVal As String = "")
 Dim OldStyle As Boolean
   On Error GoTo Erred
   SetWallpaperStyle 1
-  If ReadINI("Settings", "Smooth", "config.ini", "N") <> "Y" Then
+  If ReadINI("Settings", "Smooth", "N") <> "Y" Then
     OldStyle = True
   Else
     OldStyle = Not CanSmooth
@@ -138,7 +138,7 @@ Dim OldStyle As Boolean
   If Not OldStyle Then
     If Not ActiveDesktopSetWallpaper(SettingsFolder & "\RandomBG" & AltVal & ".bmp") Then
       OldStyle = True
-      WriteINI "Settings", "Smooth", "N", "config.ini"
+      WriteINI "Settings", "Smooth", "N"
     End If
   End If
   If OldStyle Then SystemParametersInfoA 20, 0&, SettingsFolder & "\RandomBG" & AltVal & ".bmp", &H1 Or &H2

@@ -260,10 +260,10 @@ Dim I          As Integer
     sWriteTo(1) = "Settings"
     sWriteTo(2) = sProfile
     sDescrs = GetDisplayDescr
-    WriteINI sProfile, "Info", sDescrs(0), "config.ini"
+    WriteINI sProfile, "Info", sDescrs(0)
     If UBound(sDescrs) > 0 Then
       For I = 1 To UBound(sDescrs)
-        WriteINI sProfile, "Info_" & Trim$(Str$(I)), sDescrs(I), "config.ini"
+        WriteINI sProfile, "Info_" & Trim$(Str$(I)), sDescrs(I)
       Next I
     End If
   End If
@@ -277,42 +277,42 @@ Dim I          As Integer
       frmSet.BGColor = cmdBackground.BackColor
       frmSet.Multimonitor = cmbMultimonitor.ItemData(cmbMultimonitor.ListIndex)
     Else
-      WriteINI sWriteTo(I), "Directory", dirBG.Path, "config.ini"
-      WriteINI sWriteTo(I), "Subdirectories", IIf(chkSubDir.Value = 1, "Y", "N"), "config.ini"
-      WriteINI sWriteTo(I), "Interval", IIf(cmbTime.ListIndex < 0, "180", Trim$(Str$(cmbTime.ItemData(cmbTime.ListIndex)))), "config.ini"
-      WriteINI sWriteTo(I), "Position", IIf(cmbPosition.ListIndex < 0, Trim$(Str$(bgPOSITION.Fit)), Trim$(Str$(cmbPosition.ListIndex))), "config.ini"
-      WriteINI sWriteTo(I), "MaxScale", IIf(cmbMaxScale.ListIndex < 0, Trim$(Str$(bgMAXSCALE.Unlimited)), Trim$(Str$(cmbMaxScale.ListIndex))), "config.ini"
-      WriteINI sWriteTo(I), "Color", Trim$(Str$(cmdBackground.BackColor)), "config.ini"
-      WriteINI sWriteTo(I), "Multimonitor", cmbMultimonitor.ItemData(cmbMultimonitor.ListIndex), "config.ini"
+      WriteINI sWriteTo(I), "Directory", dirBG.Path
+      WriteINI sWriteTo(I), "Subdirectories", IIf(chkSubDir.Value = 1, "Y", "N")
+      WriteINI sWriteTo(I), "Interval", IIf(cmbTime.ListIndex < 0, "180", Trim$(Str$(cmbTime.ItemData(cmbTime.ListIndex))))
+      WriteINI sWriteTo(I), "Position", IIf(cmbPosition.ListIndex < 0, Trim$(Str$(bgPOSITION.Fit)), Trim$(Str$(cmbPosition.ListIndex)))
+      WriteINI sWriteTo(I), "MaxScale", IIf(cmbMaxScale.ListIndex < 0, Trim$(Str$(bgMAXSCALE.Unlimited)), Trim$(Str$(cmbMaxScale.ListIndex)))
+      WriteINI sWriteTo(I), "Color", Trim$(Str$(cmdBackground.BackColor))
+      WriteINI sWriteTo(I), "Multimonitor", cmbMultimonitor.ItemData(cmbMultimonitor.ListIndex)
     End If
   Next I
   frmSet.tmrNewBG.Enabled = Not frmSet.mnuPause.Checked
 
   If chkBoot.Value = 1 Then
-    WriteINI "Settings", "Boot", "Y", "config.ini"
+    WriteINI "Settings", "Boot", "Y"
     regCreate_Value_SZ HKEY_CURRENT_USER, "SOFTWARE\Microsoft\Windows\CurrentVersion\Run", "RBG", App.Path & "\" & App.EXEName & ".exe"
   Else
-    WriteINI "Settings", "Boot", "N", "config.ini"
+    WriteINI "Settings", "Boot", "N"
     regDelete_Sub_Key HKEY_CURRENT_USER, "SOFTWARE\Microsoft\Windows\CurrentVersion\Run", "RBG"
   End If
   If chkAssoc.Value = 1 Then
-    WriteINI "Settings", "Assoc", "Y", "config.ini"
+    WriteINI "Settings", "Assoc", "Y"
     frmSet.SetAssoc
   Else
-    WriteINI "Settings", "Assoc", "N", "config.ini"
+    WriteINI "Settings", "Assoc", "N"
     frmSet.RemAssoc
   End If
   If chkDesktopMenu.Value = 1 Then
-    WriteINI "Settings", "DesktopMenu", "Y", "config.ini"
+    WriteINI "Settings", "DesktopMenu", "Y"
     frmSet.SetDesktopMenu
   Else
-    WriteINI "Settings", "DesktopMenu", "N", "config.ini"
+    WriteINI "Settings", "DesktopMenu", "N"
     frmSet.RemDesktopMenu
   End If
   If chkSmooth.Value = 1 Then
-    WriteINI "Settings", "Smooth", "Y", "config.ini"
+    WriteINI "Settings", "Smooth", "Y"
   Else
-    WriteINI "Settings", "Smooth", "N", "config.ini"
+    WriteINI "Settings", "Smooth", "N"
   End If
   Unload Me
   frmSet.NewBackground
@@ -347,8 +347,8 @@ Dim I         As Integer
   sProfile = GetDisplayProfile
 
   sDefDir = PicturesFolder
-  sBGDir = ReadINI(sProfile, "Directory", "config.ini", "UNSET")
-  If sBGDir = "UNSET" Then sBGDir = ReadINI("Settings", "Directory", "config.ini", sDefDir & "\")
+  sBGDir = ReadINI(sProfile, "Directory", "UNSET")
+  If sBGDir = "UNSET" Then sBGDir = ReadINI("Settings", "Directory", sDefDir & "\")
   If LenB(sBGDir) = 0 Then
     sBGDir = sDefDir & "\"
   ElseIf CheckPath(sBGDir) <> 2 Then
@@ -357,12 +357,12 @@ Dim I         As Integer
   dirBG.Path = sBGDir
   drvBG.Drive = Left$(sBGDir, 3)
 
-  sSubdir = ReadINI(sProfile, "Subdirectories", "config.ini", "UNSET")
-  If sSubdir = "UNSET" Then sSubdir = ReadINI("Settings", "Subdirectories", "config.ini", "N")
+  sSubdir = ReadINI(sProfile, "Subdirectories", "UNSET")
+  If sSubdir = "UNSET" Then sSubdir = ReadINI("Settings", "Subdirectories", "N")
   chkSubDir.Value = IIf(sSubdir = "Y", 1, 0)
 
-  sTime = ReadINI(sProfile, "Interval", "config.ini", "UNSET")
-  If sTime = "UNSET" Then sTime = ReadINI("Settings", "Interval", "config.ini", "180")
+  sTime = ReadINI(sProfile, "Interval", "UNSET")
+  If sTime = "UNSET" Then sTime = ReadINI("Settings", "Interval", "180")
   For I = 0 To cmbTime.ListCount - 1
     If cmbTime.ItemData(I) = sTime Then
       cmbTime.ListIndex = I
@@ -370,8 +370,8 @@ Dim I         As Integer
     End If
   Next I
 
-  sPosition = ReadINI(sProfile, "Position", "config.ini", "UNSET")
-  If sPosition = "UNSET" Then sPosition = ReadINI("Settings", "Position", "config.ini", "1")
+  sPosition = ReadINI(sProfile, "Position", "UNSET")
+  If sPosition = "UNSET" Then sPosition = ReadINI("Settings", "Position", "1")
   If IsNumeric(sPosition) Then
     lPosition = Val(sPosition)
     If lPosition >= 0 And lPosition <= 5 Then
@@ -383,8 +383,8 @@ Dim I         As Integer
     cmbPosition.ListIndex = bgPOSITION.Fit
   End If
 
-  sMaxScale = ReadINI(sProfile, "MaxScale", "config.ini", "UNSET")
-  If sMaxScale = "UNSET" Then sMaxScale = ReadINI("Settings", "MaxScale", "config.ini", "0")
+  sMaxScale = ReadINI(sProfile, "MaxScale", "UNSET")
+  If sMaxScale = "UNSET" Then sMaxScale = ReadINI("Settings", "MaxScale", "0")
   If IsNumeric(sMaxScale) Then
     lMaxScale = Val(sMaxScale)
     If lMaxScale >= 0 And lMaxScale <= 9 Then
@@ -396,8 +396,8 @@ Dim I         As Integer
     cmbMaxScale.ListIndex = bgMAXSCALE.Unlimited
   End If
 
-  sBGColor = ReadINI(sProfile, "Color", "config.ini", "UNSET")
-  If sBGColor = "UNSET" Then sBGColor = ReadINI("Settings", "Color", "config.ini", "0")
+  sBGColor = ReadINI(sProfile, "Color", "UNSET")
+  If sBGColor = "UNSET" Then sBGColor = ReadINI("Settings", "Color", "0")
   If IsNumeric(sBGColor) Then
     cmdBackground.BackColor = Val(sBGColor)
   Else
@@ -411,13 +411,13 @@ Dim I         As Integer
   Else
     lblMultimonitor.Enabled = True
     cmbMultimonitor.Enabled = True
-    sMultimon = ReadINI("Settings", "Unique", "config.ini", "UNSET")
+    sMultimon = ReadINI("Settings", "Unique", "UNSET")
     If sMultimon <> "UNSET" Then
-      WriteINI "Settings", "Unique", vbNullString, "config.ini"
-      WriteINI "Settings", "Multimonitor", IIf(sMultimon = "N", "0", "1"), "config.ini"
+      WriteINI "Settings", "Unique", vbNullString
+      WriteINI "Settings", "Multimonitor", IIf(sMultimon = "N", "0", "1")
     End If
-    sMultimon = ReadINI(sProfile, "Multimonitor", "config.ini", "UNSET")
-    If sMultimon = "UNSET" Then sMultimon = ReadINI("Settings", "Multimonitor", "config.ini", "1")
+    sMultimon = ReadINI(sProfile, "Multimonitor", "UNSET")
+    If sMultimon = "UNSET" Then sMultimon = ReadINI("Settings", "Multimonitor", "1")
     bMultimon = False
     For I = 0 To cmbMultimonitor.ListCount - 1
       If cmbMultimonitor.ItemData(I) = Val(sMultimon) Then
@@ -433,13 +433,13 @@ End Sub
 Private Sub Form_Load()
   LoadProfile
 
-  chkBoot.Value = IIf(ReadINI("Settings", "Boot", "config.ini", "Y") = "Y", 1, 0)
+  chkBoot.Value = IIf(ReadINI("Settings", "Boot", "Y") = "Y", 1, 0)
   If HasSysAssoc Then
     chkAssoc.Enabled = False
     chkAssoc.Value = 0
   Else
     chkAssoc.Enabled = True
-    chkAssoc.Value = IIf(ReadINI("Settings", "Assoc", "config.ini", "N") = "Y", 1, 0)
+    chkAssoc.Value = IIf(ReadINI("Settings", "Assoc", "N") = "Y", 1, 0)
   End If
   If Not CanSmooth Then
     chkSmooth.Enabled = False
@@ -448,9 +448,9 @@ Private Sub Form_Load()
     chkDesktopMenu.Value = 0
   Else
     chkSmooth.Enabled = True
-    chkSmooth.Value = IIf(ReadINI("Settings", "Smooth", "config.ini", "N") = "Y", 1, 0)
+    chkSmooth.Value = IIf(ReadINI("Settings", "Smooth", "N") = "Y", 1, 0)
     chkDesktopMenu.Enabled = True
-    chkDesktopMenu.Value = IIf(ReadINI("Settings", "DesktopMenu", "config.ini", "N") = "Y", 1, 0)
+    chkDesktopMenu.Value = IIf(ReadINI("Settings", "DesktopMenu", "N") = "Y", 1, 0)
   End If
 End Sub
 
