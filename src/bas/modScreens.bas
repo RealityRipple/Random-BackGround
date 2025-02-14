@@ -71,6 +71,7 @@ Dim hm      As Long
 Dim mi      As MONITORINFO
 Dim Mons()  As Monitor
 Dim mCnt    As Long
+  On Error GoTo Plain
   dd.cb = Len(dd)
   dev = 0
   Do While EnumDisplayDevices(vbNullString, dev, dd, 0) <> 0
@@ -97,8 +98,17 @@ Dim mCnt    As Long
     End If
     dev = dev + 1
   Loop
+  If mCnt = 0 Then GoTo Plain
   SortByCoords Mons
   If Not modZero.ZeroPrimary Then ReZeroCoords Mons
+  GetMonitors = Mons
+  Exit Function
+Plain:
+  ReDim Mons(0)
+  Mons(0).Left = 0
+  Mons(0).Top = 0
+  Mons(0).Width = Screen.Width \ Screen.TwipsPerPixelX
+  Mons(0).Height = Screen.Height \ Screen.TwipsPerPixelY
   GetMonitors = Mons
 End Function
 
@@ -108,6 +118,7 @@ Dim J      As Long
 Dim vSwap  As Monitor
 Dim iMax   As Long
 Const iMin As Long = 1
+  On Error GoTo Erred
   iMax = UBound(Mons)
   I = iMin
   J = I + 1
@@ -122,12 +133,14 @@ Const iMin As Long = 1
       J = J + 1
     End If
   Loop
+Erred:
 End Sub
 
 Private Sub ReZeroCoords(ByRef Mons() As Monitor)
 Dim I     As Long
 Dim iTop  As Long
 Dim iLeft As Long
+  On Error GoTo Erred
   For I = 0 To UBound(Mons)
     If iTop > Mons(I).Top Then iTop = Mons(I).Top
     If iLeft > Mons(I).Left Then iLeft = Mons(I).Left
@@ -139,6 +152,7 @@ Dim iLeft As Long
     Mons(I).Top = Mons(I).Top + iTop
     Mons(I).Left = Mons(I).Left + iLeft
   Next I
+Erred:
 End Sub
 
 Public Function GetMonitorCount() As Integer
